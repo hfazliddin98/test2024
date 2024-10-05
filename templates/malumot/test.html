@@ -1,0 +1,33 @@
+{% extends "asosiy/base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+
+      {% include "asosiy/sidebar.html" %}
+
+      <!-- content -->
+      <div class="col">
+        
+        <div class="row mx-3 px-2">
+          <h1 class="text-center my-5">Test qo`shish</h1>
+
+          <div class="row py-2">
+            <form method="post">
+              {% csrf_token %}
+
+              {% bootstrap_form form %}
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+{% endblock %}

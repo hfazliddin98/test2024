@@ -1,0 +1,51 @@
+<div class="bg-body-tertiary text-black border-end border-5 col-auto col-md-4 col-lg-3 col-xl-2 min-vh-100 d-flex flex-column justify-content-between">
+    {% if user.is_authenticated %}
+
+        {% if user.is_superuser or user.admin == True %}
+            <div class="bg-body-tertiary text-black px-0">
+
+                <ul class="nav flex-column ">
+                    <li class="nav-item py-2 py-sm-0">
+                        <a href="{% url 'mavzular' %}" class="nav-link text-dark">
+                            <i class="fa-solid fa-vial-virus"></i>
+                            <span class="fs-6 ms-3 d-none d-sm-inline">
+                                Mavzular
+                            </span>
+                        </a>
+                    </li>
+                    <li class="nav-item py-2 py-sm-0">
+                        <a href="{% url 'testlar' %}" class="nav-link text-dark">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span class="fs-6 ms-3 d-none d-sm-inline">
+                                Testlar
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>                    
+        {% endif %}
+        
+        {% if user.fakultet_admin == True %}
+            <div class="bg-body-tertiary text-black px-0 mt-3">                
+
+                <ul class="nav flex-column ">
+
+                    <li class="nav-item py-2 py-sm-0">
+                        <a href="" class="nav-link text-dark">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span class="fs-6 ms-3 d-none d-sm-inline">
+                                Natijalar
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+
+            </div>
+        {% endif %}
+
+        
+    {% endif%}
+
+</div>

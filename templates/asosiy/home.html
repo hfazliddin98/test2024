@@ -1,0 +1,45 @@
+{% extends "asosiy/base.html" %}
+{% load static %}
+
+
+{% block title %}Bosh sahifa{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+
+        {% include "asosiy/sidebar.html" %}
+
+        <!-- content -->
+        <div class="col">
+            <div class="row row-cols-1 row-cols-md-3 g-4 mt-4 mx-2">
+
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="card h-100 text-center">
+                        <i class="fa-solid fa-vial-virus fa-6x p-2"></i>
+                        <div class="card-body">
+                            <h3 class="card-title">Mavzular</h3>                            
+                        </div>
+                        <div class="card-footer py-3">
+                            <a href="{% url 'mavzular' %}" class="text-body-secondary h6">Mavzular</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12">
+                    <div class="card h-100 text-center">
+                        <i class="fa-solid fa-envelope-open-text fa-6x p-2"></i>
+                        <div class="card-body">
+                            <h3 class="card-title">Testlar</h3>                            
+                        </div>
+                        <div class="card-footer py-3">
+                            <a href="{% url 'testlar' %}" class="text-body-secondary h6">Testlar</a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

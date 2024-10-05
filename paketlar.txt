@@ -1,0 +1,6 @@
+django
+pillow
+fontawesomefree
+django_bootstrap5
+requests
+pandas

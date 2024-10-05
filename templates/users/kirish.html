@@ -1,0 +1,48 @@
+{% extends "asosiy/base.html" %}
+{% load static %}
+
+
+{% block title %}Kirish{% endblock %}
+
+{% block content %}
+    <div class="row position-relative min-vh-100">
+        <div class="position-absolute top-50 start-50 translate-middle ">
+            <div class="position-relative">
+                <div class="position-absolute top-0 start-50 translate-middle">
+                    <div class="border p-5 h-100 w-100">
+                        <p class="text-center display-5">
+                            <strong>
+                                Kirish
+                            </strong>
+                        </p>
+
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="exampleInputUser" class="form-label">Username</label>
+                                <input type="text" name="username" class="form-control" id="exampleInputUser" aria-describedby="emailHelp">
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="exampleInputPassword1">
+                            </div>
+                            <div class="position-relative mt-5">
+                                <div class="position-absolute top-0 start-50 translate-middle">
+                                    <button type="submit" class="btn-sm btn btn-outline-primary px-3">Kirish</button>
+                                </div>
+                            </div>                           
+                            
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+{% endblock %}
