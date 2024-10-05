@@ -34,11 +34,21 @@
               <div class="col-xl-11 col-md-10 col-sm-12 fw-bold fs-6">
                 {{a.mavzu }}
               </div>                   
-              
+              {% if a.qrcode %}
               <div class="col-xl-1 col-md-2 col-sm-12 text-center">
-                <img src="{% static 'a.qrcode' %}" class="rounded float-end">
+                <a href="{{ a.qrcode.url }}" download>
+                  <img src="{{ a.qrcode.url }}" class="rounded float-end">
+
+                </a>
               </div>
-              <hr class="mb-0">
+              {% else %}
+              <div class="col-xl-1 col-md-2 col-sm-12 text-center">
+                <a href="">
+                  <img src="" class="rounded float-end">
+
+                </a>
+              </div>
+              {% endif %}
             {% endfor%}    
         </div>
 

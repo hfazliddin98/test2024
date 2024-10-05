@@ -30,16 +30,25 @@
         </div>
         
         <div class="row d-flex align-items-center mx-3 px-2">
-            {% for a in page_obj %}
-              <div class="col-xl-11 col-md-10 col-sm-12 fw-bold fs-6">
-                {{a.savol}}
-              </div>                   
-              
-              <div class="col-xl-1 col-md-2 col-sm-12 text-center">
-                <img src="{% static 'a.qrcode.url' %}" class="rounded float-end"  >
-              </div>
-              <hr class="mb-0">
-            {% endfor%}    
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">N</th>
+                <th scope="col">Mavzu</th>
+                <th scope="col">Savol</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in page_obj %}
+              <tr>
+                <th scope="row">{{a.id}}</th>
+                <td>{{a.mavzu_id.mavzu}}</td>
+                <td>{{a.savol}}</td>
+              </tr>
+              {% endfor%} 
+            </tbody>
+          </table> 
+               
         </div>
 
         <div class="row py-2">

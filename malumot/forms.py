@@ -1,5 +1,5 @@
 from django import forms
-from malumot.models import Mavzular
+from malumot.models import Mavzular, Testlar
 
 
 
@@ -13,4 +13,18 @@ class MavzularForm(forms.ModelForm):
         model = Mavzular
         fields = [
             'mavzu'
+        ]
+
+
+class TestlarForm(forms.ModelForm):
+    class Meta:
+        model = Testlar
+        fields = [
+            'mavzu_id',
+            'savol',
+            'a',
+            'b',
+            'c',
+            'd',
+            'togri',
         ]

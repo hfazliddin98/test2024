@@ -3,15 +3,20 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from malumot.models import Mavzular, Testlar
-from malumot.forms import LoginForm, MavzularForm
+from malumot.forms import LoginForm, MavzularForm, TestlarForm
 
 
 
 @csrf_exempt
 def home(request):
+    if request.user.is_authenticated:
 
 
-    return render(request, 'asosiy/home.html')
+        return render(request, 'asosiy/home.html')
+    
+    else:
+
+        return redirect('kirish')
 
 
 @csrf_exempt
@@ -70,8 +75,7 @@ def mavzu(request):
         if request.method == 'POST':
             form = MavzularForm(request.POST)
             if form.is_valid():
-                amaliyot = form.save(commit=False)
-                amaliyot.save()
+                form.save()                
                 return redirect('mavzular')
         else:
             form = MavzularForm()
@@ -107,13 +111,12 @@ def testlar(request):
 def test(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            form = MavzularForm(request.POST)
+            form = TestlarForm(request.POST)
             if form.is_valid():
-                amaliyot = form.save(commit=False)
-                amaliyot.save()
+                form.save()
                 return redirect('testlar')
         else:
-            form = MavzularForm()
+            form = TestlarForm()
             
         context = {
             'form':form,
