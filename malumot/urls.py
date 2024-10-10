@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, kirish, chiqish, mavzular, mavzu, testlar, test   
+from .views import home, kirish, chiqish, mavzular, mavzu, testlar, test, natijalar   
 
 urlpatterns = [
     path('', home, name='home'),
@@ -8,5 +8,6 @@ urlpatterns = [
     path('mavzular/', mavzular, name='mavzular'),
     path('mavzu/', mavzu, name='mavzu'),
     path('testlar/', testlar, name='testlar'),
-    path('test/', test, name='test')
+    path('test/', test, name='test'),
+    path('natijalar/', natijalar, name='natijalar'),
 ]

@@ -1,3 +1,4 @@
+
 from django.db import models
 
 JAVOB_CHOICES = (
@@ -12,9 +13,11 @@ JAVOB_CHOICES = (
 class Mavzular(models.Model):
     mavzu = models.CharField(max_length=255)
     qrcode = models.ImageField(upload_to='mavzu', blank=True)
+    yaratish = models.BooleanField(default=False)
 
     def __str__(self):
         return self.mavzu
+
 
 
 class Testlar(models.Model):
@@ -27,4 +30,4 @@ class Testlar(models.Model):
     togri = models.CharField(max_length=25, choices=JAVOB_CHOICES, default="A")
     
     def __str__(self):
-        return self.savol
+        return self.savol 

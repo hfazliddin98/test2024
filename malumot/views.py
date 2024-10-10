@@ -1,3 +1,6 @@
+import qrcode
+from django.core.files.base import ContentFile
+from io import BytesIO
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
@@ -47,14 +50,45 @@ def kirish(request):
 
 @csrf_exempt
 def chiqish(request):
-    logout(request)
+    logout(request)  
+    return redirect('/')  
 
-    return redirect('/')
 
 
 @csrf_exempt
 def mavzular(request):
     if request.user.is_authenticated:
+
+        data = f"https://quiz2024.pythonanywhere.com/shartnoma/shartnoma/{username}/"
+        qr = qrcode.QRCode(version=1, box_size=10, border=4)
+        qr.add_data(data)
+        qr.make()
+        img = qr.make_image()
+        img.save(f"media/qr_code/{username}.png")
+        link = f'https://quiz2024.pythonanywhere.com/media/qr_code/{username}.png'
+
+        rasmlar = Mavzular.objects.filter(user_id=user_id)
+                
+        image_path = f'{username}.png'
+        image_url = f'{media_url}{image_path}'
+        if rasmlar:
+            data = get_object_or_404(Mavzular, user_id=user_id.id)
+            data.user_id = user_id.id
+            data.link = link 
+            data.rasm = image_url
+            data.save()
+        else:
+            data = Mavzular.objects.create(
+                user_id = user_id.id,
+                link = link,
+                rasm = image_url
+            )
+            data.save()
+
+        
+        
+
+
         object_list = Mavzular.objects.all()
         paginator = Paginator(object_list, 10)            
         page_number = request.GET.get('page')           
@@ -125,6 +159,19 @@ def test(request):
     
     else:        
         return render(request, 'asosiy/404.html')
+    
 
+
+@csrf_exempt
+def natijalar(request):
+
+    pass
+
+
+
+@csrf_exempt
+def test_bajarish(request, pk):
+
+    return
 
   

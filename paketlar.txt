@@ -4,3 +4,4 @@ fontawesomefree
 django_bootstrap5
 requests
 pandas
+qrcode
