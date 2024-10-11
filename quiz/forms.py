@@ -1,5 +1,5 @@
 from django import forms
-from malumot.models import Mavzular, Testlar
+from quiz.models import Mavzular, Testlar
 
 
 

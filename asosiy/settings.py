@@ -22,6 +22,7 @@ CSRF_TRUSTED_ORIGINS=['https://quiz2024.pythonanywhere.com', 'http://quiz2024.py
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,7 +38,7 @@ INSTALLED_APPS = [
     'dbbackup', 
 
     # men qoshgan app
-    'malumot',
+    'quiz',
     'users',
 
 ]

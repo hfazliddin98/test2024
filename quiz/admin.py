@@ -1,5 +1,5 @@
 from django.contrib import admin
-from malumot.models import Mavzular, Testlar
+from quiz.models import Mavzular, Testlar
 
  
 @admin.register(Testlar)

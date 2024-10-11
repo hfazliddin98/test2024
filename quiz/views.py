@@ -5,8 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
-from malumot.models import Mavzular, Testlar
-from malumot.forms import LoginForm, MavzularForm, TestlarForm
+from quiz.models import Mavzular, Testlar
+from quiz.forms import LoginForm, MavzularForm, TestlarForm
 
 
 
