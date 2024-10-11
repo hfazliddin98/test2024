@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     # app
     'fontawesomefree',
     'django_bootstrap5',
+    'import_export',
+    'dbbackup', 
 
     # men qoshgan app
     'malumot',
@@ -126,7 +128,19 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / "backup"}
+
+# auto backup
+
+CRONJOBS = [ 
+    ('00 11 01 * *', 'asosiy.cron.my_backup_file')
+]

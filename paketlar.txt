@@ -5,3 +5,8 @@ django_bootstrap5
 requests
 pandas
 qrcode
+
+
+django-import-export
+django-dbbackup
+django-crontab
