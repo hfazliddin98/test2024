@@ -58,32 +58,27 @@ def chiqish(request):
 @csrf_exempt
 def mavzular(request):
     if request.user.is_authenticated:
+        mavzular = Mavzular.objects.filter(yaratish=False)
 
-        data = f"https://quiz2024.pythonanywhere.com/shartnoma/shartnoma/{username}/"
-        qr = qrcode.QRCode(version=1, box_size=10, border=4)
-        qr.add_data(data)
-        qr.make()
-        img = qr.make_image()
-        img.save(f"media/qr_code/{username}.png")
-        link = f'https://quiz2024.pythonanywhere.com/media/qr_code/{username}.png'
+        for m in mavzular:
+            data = f"https://quiz2024.pythonanywhere.com/test_bajarish/{m.id}/"
+            qr = qrcode.QRCode(version=1, box_size=10, border=4)
+            qr.add_data(data)
+            qr.make()
+            img = qr.make_image()
+            img.save(f"media/mavzu/quiz_{m.id}.png")
+            qrlink = f'https://quiz2024.pythonanywhere.com/media/mavzu/quiz_{m.id}.png'
 
-        rasmlar = Mavzular.objects.filter(user_id=user_id)
-                
-        image_path = f'{username}.png'
-        image_url = f'{media_url}{image_path}'
-        if rasmlar:
-            data = get_object_or_404(Mavzular, user_id=user_id.id)
-            data.user_id = user_id.id
-            data.link = link 
-            data.rasm = image_url
-            data.save()
-        else:
-            data = Mavzular.objects.create(
-                user_id = user_id.id,
-                link = link,
-                rasm = image_url
+                    
+            media_url = '/mavzu/'
+            image_path = f'quiz_{m.id}.png'
+            image_url = f'{media_url}{image_path}'
+          
+            data = Mavzular.objects.update_or_create(
+                qrlink = qrlink,
+                qrcode = image_url,
+                yaratish = True
             )
-            data.save()
 
         
         

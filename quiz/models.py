@@ -13,6 +13,7 @@ JAVOB_CHOICES = (
 class Mavzular(models.Model):
     mavzu = models.CharField(max_length=255)
     qrcode = models.ImageField(upload_to='mavzu', blank=True)
+    qrlink = models.CharField(max_length=255, blank=True)
     yaratish = models.BooleanField(default=False)
 
     def __str__(self):
