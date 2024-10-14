@@ -65,6 +65,7 @@ def mavzular(request):
         mavzular = Mavzular.objects.filter(yaratish=False)
         if mavzular:
             domen = settings.DOMEN
+            media_url = settings.MEDIA_ROOT
 
             for m in mavzular:
                 data = f"https://{domen}/test_bajarish/{m.id}/"
@@ -72,13 +73,12 @@ def mavzular(request):
                 qr.add_data(data)
                 qr.make()
                 img = qr.make_image()
-                img.save(f"media/mavzu/quiz_{m.id}.png")
-                qrlink = f'https://{domen}/media/mavzu/quiz_{m.id}.png'
+                img.save(f"{media_url}/mavzu/quiz_{m.id}.png")
+                qrlink = f'https://{domen}/{media_url}/mavzu/quiz_{m.id}.png'
 
                         
-                media_url = '/mavzu/'
-                image_path = f'quiz_{m.id}.png'
-                image_url = f'{media_url}{image_path}'
+
+                image_url = f'/mavzu/quiz_{m.id}.png'
             
                 # Ob'ekt maydonlarini yangilash
                 m.qrlink = qrlink
