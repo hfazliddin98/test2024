@@ -14,8 +14,11 @@ SECRET_KEY = 'django-insecure-m^d8qzqtae)px5-j3-!sf##(id_w(g_k(a@73j^&5=se9w&ym@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.kokanddeveloper.uz', '.pythonanywhere.com', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS=['https://quiz2024.pythonanywhere.com', 'http://quiz2024.pythonanywhere.com', 'http://127.0.0.1']
+DOMEN = 'quiz2024.pythonanywhere.com'
+LOCAL_DOMEN = '127.0.0.1'
+
+ALLOWED_HOSTS = ['.kokanddeveloper.uz', DOMEN, 'localhost', LOCAL_DOMEN]
+CSRF_TRUSTED_ORIGINS=[f'https://{DOMEN}', f'http://{DOMEN}']
 
 
 

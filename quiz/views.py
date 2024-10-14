@@ -1,5 +1,7 @@
 import qrcode
 from django.core.files.base import ContentFile
+from django.conf import settings
+from django.http import HttpResponse
 from io import BytesIO
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
@@ -7,6 +9,8 @@ from django.shortcuts import render, redirect
 from django.core.paginator import Paginator
 from quiz.models import Mavzular, Testlar
 from quiz.forms import LoginForm, MavzularForm, TestlarForm
+
+
 
 
 
@@ -60,26 +64,27 @@ def mavzular(request):
     if request.user.is_authenticated:
         mavzular = Mavzular.objects.filter(yaratish=False)
         if mavzular:
+            domen = settings.DOMEN
 
             for m in mavzular:
-                data = f"https://quiz2024.pythonanywhere.com/test_bajarish/{m.id}/"
+                data = f"https://{domen}/test_bajarish/{m.id}/"
                 qr = qrcode.QRCode(version=1, box_size=10, border=4)
                 qr.add_data(data)
                 qr.make()
                 img = qr.make_image()
                 img.save(f"media/mavzu/quiz_{m.id}.png")
-                qrlink = f'https://quiz2024.pythonanywhere.com/media/mavzu/quiz_{m.id}.png'
+                qrlink = f'https://{domen}/media/mavzu/quiz_{m.id}.png'
 
                         
                 media_url = '/mavzu/'
                 image_path = f'quiz_{m.id}.png'
                 image_url = f'{media_url}{image_path}'
             
-                data = Mavzular.objects.update_or_create(
-                    qrlink = qrlink,
-                    qrcode = image_url,
-                    yaratish = True
-                )
+                # Ob'ekt maydonlarini yangilash
+                m.qrlink = qrlink
+                m.qrcode = image_url
+                m.yaratish = True
+                m.save()
 
         
         
@@ -161,13 +166,13 @@ def test(request):
 @csrf_exempt
 def natijalar(request):
 
-    pass
+    return HttpResponse('Hozirda malumot avjud emas')
 
 
 
 @csrf_exempt
 def test_bajarish(request, pk):
 
-    return
+    return HttpResponse('Hozirda malumot avjud emas')
 
   
