@@ -1,11 +1,12 @@
 import qrcode
+import random
 from django.core.files.base import ContentFile
 from django.conf import settings
 from django.http import HttpResponse
 from io import BytesIO
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from quiz.models import Mavzular, Testlar
 from quiz.forms import LoginForm, MavzularForm, TestlarForm
@@ -98,7 +99,7 @@ def mavzular(request):
         context = {
             'page_obj':page_obj,
         }
-        return render(request, 'malumot/mavzular.html', context)
+        return render(request, 'quiz/mavzular.html', context)
 
     else:
         return render(request, 'asosiy/404.html')    
@@ -117,7 +118,7 @@ def mavzu(request):
         context = {
             'form':form,
         }
-        return render(request, 'malumot/mavzu.html', context)
+        return render(request, 'quiz/mavzu.html', context)
     
     else:        
         return render(request, 'asosiy/404.html')
@@ -134,7 +135,7 @@ def testlar(request):
         context = {
             'page_obj':page_obj,
         }
-        return render(request, 'malumot/testlar.html', context)
+        return render(request, 'quiz/testlar.html', context)
 
     else:
         return render(request, 'asosiy/404.html')
@@ -156,7 +157,7 @@ def test(request):
         context = {
             'form':form,
         }
-        return render(request, 'malumot/test.html', context)
+        return render(request, 'quiz/test.html', context)
     
     else:        
         return render(request, 'asosiy/404.html')
@@ -173,6 +174,21 @@ def natijalar(request):
 @csrf_exempt
 def test_bajarish(request, pk):
 
-    return HttpResponse('Hozirda malumot avjud emas')
+    test = get_object_or_404(Testlar, mavzu_id=pk)
+    
+    # Variantlarni to‘plamga o‘tkazamiz
+    options = [
+        {"text": test.a, "choice": "A"},
+        {"text": test.b, "choice": "B"},
+        {"text": test.c, "choice": "C"},
+        {"text": test.d, "choice": "D"}
+    ]
+    
+    # Variantlarni aralashtiramiz
+    random.shuffle(options)
+
+    context = {'test': test, 'options': options}
+    
+    return render(request, 'quiz/quiz.html', context)
 
   
