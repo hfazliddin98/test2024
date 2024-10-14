@@ -174,21 +174,25 @@ def natijalar(request):
 @csrf_exempt
 def test_bajarish(request, pk):
 
-    test = get_object_or_404(Testlar, mavzu_id=pk)
+    test = Testlar.objects.filter(mavzu_id=pk)
+    if test:
     
-    # Variantlarni to‘plamga o‘tkazamiz
-    options = [
-        {"text": test.a, "choice": "A"},
-        {"text": test.b, "choice": "B"},
-        {"text": test.c, "choice": "C"},
-        {"text": test.d, "choice": "D"}
-    ]
-    
-    # Variantlarni aralashtiramiz
-    random.shuffle(options)
+        # Variantlarni to‘plamga o‘tkazamiz
+        options = [
+            {"text": test.a, "choice": "A"},
+            {"text": test.b, "choice": "B"},
+            {"text": test.c, "choice": "C"},
+            {"text": test.d, "choice": "D"}
+        ]
+        
+        # Variantlarni aralashtiramiz
+        random.shuffle(options)
 
-    context = {'test': test, 'options': options}
-    
-    return render(request, 'quiz/quiz.html', context)
+        context = {'test': test, 'options': options}
+        
+        return render(request, 'quiz/quiz.html', context)
+    else:
+
+        return HttpResponse('data')
 
   
