@@ -59,26 +59,27 @@ def chiqish(request):
 def mavzular(request):
     if request.user.is_authenticated:
         mavzular = Mavzular.objects.filter(yaratish=False)
+        if mavzular:
 
-        for m in mavzular:
-            data = f"https://quiz2024.pythonanywhere.com/test_bajarish/{m.id}/"
-            qr = qrcode.QRCode(version=1, box_size=10, border=4)
-            qr.add_data(data)
-            qr.make()
-            img = qr.make_image()
-            img.save(f"media/mavzu/quiz_{m.id}.png")
-            qrlink = f'https://quiz2024.pythonanywhere.com/media/mavzu/quiz_{m.id}.png'
+            for m in mavzular:
+                data = f"https://quiz2024.pythonanywhere.com/test_bajarish/{m.id}/"
+                qr = qrcode.QRCode(version=1, box_size=10, border=4)
+                qr.add_data(data)
+                qr.make()
+                img = qr.make_image()
+                img.save(f"media/mavzu/quiz_{m.id}.png")
+                qrlink = f'https://quiz2024.pythonanywhere.com/media/mavzu/quiz_{m.id}.png'
 
-                    
-            media_url = '/mavzu/'
-            image_path = f'quiz_{m.id}.png'
-            image_url = f'{media_url}{image_path}'
-          
-            data = Mavzular.objects.update_or_create(
-                qrlink = qrlink,
-                qrcode = image_url,
-                yaratish = True
-            )
+                        
+                media_url = '/mavzu/'
+                image_path = f'quiz_{m.id}.png'
+                image_url = f'{media_url}{image_path}'
+            
+                data = Mavzular.objects.update_or_create(
+                    qrlink = qrlink,
+                    qrcode = image_url,
+                    yaratish = True
+                )
 
         
         
