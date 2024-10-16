@@ -10,5 +10,5 @@ urlpatterns = [
     path('testlar/', testlar, name='testlar'),
     path('test/', test, name='test'),
     path('natijalar/', natijalar, name='natijalar'),
-    path('test_bajarish/<int:pk>/', test_bajarish, name='test_bajarish'),
+    path('test_bajarish/<int:str>/', test_bajarish, name='test_bajarish'),
 ]

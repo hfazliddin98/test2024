@@ -21,12 +21,7 @@
             <h2>{{ test.savol }}</h2>
             <form method="post">
                 {% csrf_token %}
-                {% for option in options %}
-                    <div>
-                        <input type="radio" name="answer" value="{{ option.choice }}">
-                        {{ option.text }}
-                    </div>
-                {% endfor %}
+               {{form.as_p}}
                 <button type="submit">Submit</button>
             </form>
           </div>

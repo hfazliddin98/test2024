@@ -9,7 +9,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from quiz.models import Mavzular, Testlar
-from quiz.forms import LoginForm, MavzularForm, TestlarForm
+from quiz.forms import LoginForm, MavzularForm, TestlarForm, YechishForm
 
 
 
@@ -176,19 +176,11 @@ def test_bajarish(request, pk):
 
     test = Testlar.objects.filter(mavzu_id=pk)
     if test:
-    
-        # Variantlarni to‘plamga o‘tkazamiz
-        options = [
-            {"text": test.a, "choice": "A"},
-            {"text": test.b, "choice": "B"},
-            {"text": test.c, "choice": "C"},
-            {"text": test.d, "choice": "D"}
-        ]
+        form = YechishForm()
         
-        # Variantlarni aralashtiramiz
-        random.shuffle(options)
-
-        context = {'test': test, 'options': options}
+        context = {
+            'form':form,
+        }
         
         return render(request, 'quiz/quiz.html', context)
     else:

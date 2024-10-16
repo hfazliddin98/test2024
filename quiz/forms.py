@@ -28,3 +28,15 @@ class TestlarForm(forms.ModelForm):
             'd',
             'togri',
         ]
+
+class YechishForm(forms.ModelForm):
+    class Meta:
+        model = Testlar
+        fields = [
+            'mavzu_id',
+            'savol',
+            'a',
+            'b',
+            'c',
+            'd',
+        ]

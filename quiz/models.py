@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import AsosiyModel, Fakultets, Yonalishs, Kurs, Guruhs
 
 
 JAVOB_CHOICES = (
@@ -10,7 +11,7 @@ JAVOB_CHOICES = (
 
 
 
-class Mavzular(models.Model):
+class Mavzular(AsosiyModel):
     mavzu = models.CharField(max_length=255)
     qrcode = models.ImageField(upload_to='mavzu', blank=True)
     qrlink = models.CharField(max_length=255, blank=True)
@@ -21,7 +22,7 @@ class Mavzular(models.Model):
 
 
 
-class Testlar(models.Model):
+class Testlar(AsosiyModel):
     mavzu_id = models.ForeignKey(Mavzular, on_delete=models.CASCADE)
     savol = models.CharField(max_length=500)
     a = models.CharField(max_length=255)
@@ -32,3 +33,15 @@ class Testlar(models.Model):
     
     def __str__(self):
         return self.savol 
+    
+class Talabas(AsosiyModel):
+    tast_id = models.ForeignKey(Testlar, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    fakultet_id = models.ForeignKey(Fakultets, on_delete=models.CASCADE)
+    yonalish_id = models.ForeignKey(Yonalishs, on_delete=models.CASCADE)
+    kurs_id = models.ForeignKey(Kurs, on_delete=models.CASCADE)
+    guruh_id = models.ForeignKey(Guruhs, on_delete=models.CASCADE)
+    
+
+    def __str__(self):
+        return self.name
