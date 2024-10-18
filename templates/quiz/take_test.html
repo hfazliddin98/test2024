@@ -1,0 +1,42 @@
+{% extends "asosiy/base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block content %}
+  <div class="container-fluid">
+    <div class="row flex-nowrap">
+
+      {% include "asosiy/sidebar.html" %}
+
+      <!-- content -->
+      <div class="col">
+        
+        <div class="row mx-3 px-2">
+          <h1 class="text-center my-5">Mavzu qo`shish</h1>
+
+          <div class="row py-2">
+            <form method="post">
+                {% csrf_token %}
+                {% for test, variants in tests %}
+                    <fieldset>
+                        <legend>{{ test.savol }}</legend>
+                        {% for variant in variants %}
+                            <label>
+                                <input type="radio" name="test_{{ test.id }}" value="{{ variant.0 }}">
+                                {{ variant.1 }}
+                            </label><br>
+                        {% endfor %}
+                    </fieldset>
+                {% endfor %}
+                <button type="submit">Baholash</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,22 +1,16 @@
 from django.contrib import admin
-from quiz.models import Mavzular, Testlar, Talabas
+from quiz.models import Mavzus, Tests, Talabas
 
 
  
-@admin.register(Testlar)
-class TestlarAdmin(admin.ModelAdmin):
-    list_display = ['id', 'mavzu_id', 'savol']
+@admin.register(Tests)
+class TestsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'mavzu_id', 'savol', 'variant_a', 'variant_b', 'variant_c', 'variant_d']
     search_fields = ['savol']
 
 
-@admin.register(Mavzular)
-class MavzularAdmin(admin.ModelAdmin):
+@admin.register(Mavzus)
+class MavzusAdmin(admin.ModelAdmin):
     list_display = ['id', 'mavzu']
     search_fields = ['mavzu']
 
-
-# @admin.register(Talabas)
-# class TalabaAdmin(admin.ModelAdmin):
-#     list_display = ['tast_id']
-
-admin.site.register([])

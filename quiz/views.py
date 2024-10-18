@@ -8,8 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from quiz.models import Mavzular, Testlar
-from quiz.forms import LoginForm, MavzularForm, TestlarForm, YechishForm
+from quiz.models import Mavzus, Tests
+from quiz.forms import LoginForm, MavzusForm, TestsForm, YechishForm, TestAnswerForm
 
 
 
@@ -63,12 +63,12 @@ def chiqish(request):
 @csrf_exempt
 def mavzular(request):
     if request.user.is_authenticated:
-        mavzular = Mavzular.objects.filter(yaratish=False)
-        if mavzular:
+        mavzus = Mavzus.objects.filter(yaratish=False)
+        if mavzus:
             domen = settings.DOMEN
             media_url = settings.MEDIA_ROOT
 
-            for m in mavzular:
+            for m in mavzus:
                 data = f"https://{domen}/test_bajarish/{m.id}/"
                 qr = qrcode.QRCode(version=1, box_size=10, border=4)
                 qr.add_data(data)
@@ -81,7 +81,7 @@ def mavzular(request):
 
                 image_url = f'/mavzu/quiz_{m.id}.png'
             
-                # Ob'ekt maydonlarini yangilash
+                # Ob'ekt maydonsini yangilash
                 m.qrlink = qrlink
                 m.qrcode = image_url
                 m.yaratish = True
@@ -91,7 +91,7 @@ def mavzular(request):
         
 
 
-        object_list = Mavzular.objects.all()
+        object_list = Mavzus.objects.all()
         paginator = Paginator(object_list, 10)            
         page_number = request.GET.get('page')           
         page_obj = paginator.get_page(page_number)    
@@ -109,12 +109,12 @@ def mavzular(request):
 def mavzu(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            form = MavzularForm(request.POST)
+            form = MavzusForm(request.POST)
             if form.is_valid():
                 form.save()                
                 return redirect('mavzular')
         else:
-            form = MavzularForm()
+            form = MavzusForm()
         context = {
             'form':form,
         }
@@ -127,7 +127,7 @@ def mavzu(request):
 @csrf_exempt
 def testlar(request):
     if request.user.is_authenticated:
-        object_list = Testlar.objects.all()
+        object_list = Tests.objects.all()
         paginator = Paginator(object_list, 10)            
         page_number = request.GET.get('page')           
         page_obj = paginator.get_page(page_number)    
@@ -147,12 +147,12 @@ def testlar(request):
 def test(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
-            form = TestlarForm(request.POST)
+            form = TestsForm(request.POST)
             if form.is_valid():
                 form.save()
                 return redirect('testlar')
         else:
-            form = TestlarForm()
+            form = TestsForm()
             
         context = {
             'form':form,
@@ -174,17 +174,63 @@ def natijalar(request):
 @csrf_exempt
 def test_bajarish(request, pk):
 
-    test = Testlar.objects.filter(mavzu_id=pk)
-    if test:
-        form = YechishForm()
+    tests = Tests.objects.filter(mavzu_id=pk)
+
+    if tests:
+        if request.method == 'POST':
+            form = TestAnswerForm(request.POST, tests=tests)
+            if form.is_valid():
+                data = form.cleaned_data['savol']
+                print(data)
+                score = 0
+                for test in tests:
+                    user_answer = form.cleaned_data[f'test_{test.id}']
+                    if user_answer == test.to_gri_javob:  # To'g'ri javobni tekshirish
+                        score += 1
+                
+                return render(request, 'test_result.html', {'score': score, 'total': len(tests)})
+        else:
+            form = TestAnswerForm(tests=tests)
+
         
-        context = {
-            'form':form,
-        }
-        
-        return render(request, 'quiz/quiz.html', context)
+            return render(request, 'quiz/quiz.html', {'form':form})
     else:
 
         return HttpResponse('data')
 
+
+import random
+from django.shortcuts import render
+from .forms import TestAnswerForm
+
+
+def take_test(request, pk):
+    tests = Tests.objects.filter(mavzu_id=pk)  # Tanlangan mavzuga tegishli barcha testlarni olib kelamiz
+
+    # Variantlarni aralashtirish
+    shuffled_tests = []
+    for test in tests:
+        variants = [
+            ('A', test.variant_a),
+            ('B', test.variant_b),
+            ('C', test.variant_c),
+            ('D', test.variant_d),
+        ]
+        random.shuffle(variants)  # Variantlarni aralashtirish
+        shuffled_tests.append((test, variants))  # Test va aralashtirilgan variantlarni saqlash
+
+    if request.method == 'POST':
+        form = TestAnswerForm(request.POST, tests=shuffled_tests)
+        if form.is_valid():
+            score = 0
+            for test, variants in shuffled_tests:
+                user_answer = form.cleaned_data[f'test_{test.id}']
+                if user_answer == test.togri_javob:  # To'g'ri javobni tekshirish
+                    score += 1
+            
+            return render(request, 'quiz/test_result.html', {'score': score, 'total': len(tests)})
+    else:
+        form = TestAnswerForm(tests=shuffled_tests)  # Aralashtirilgan variantlar bilan forma yaratish
+
+    return render(request, 'quiz/take_test.html', {'form': form, 'tests': shuffled_tests})
   

@@ -2,16 +2,9 @@ from django.db import models
 from users.models import AsosiyModel, Fakultets, Yonalishs, Kurs, Guruhs
 
 
-JAVOB_CHOICES = (
-    ("A", "A"),
-    ("B", "B"),
-    ("C", "C"),
-    ("D", "D"),
-)
 
 
-
-class Mavzular(AsosiyModel):
+class Mavzus(AsosiyModel):
     mavzu = models.CharField(max_length=255)
     qrcode = models.ImageField(upload_to='mavzu', blank=True)
     qrlink = models.CharField(max_length=255, blank=True)
@@ -22,20 +15,26 @@ class Mavzular(AsosiyModel):
 
 
 
-class Testlar(AsosiyModel):
-    mavzu_id = models.ForeignKey(Mavzular, on_delete=models.CASCADE)
+class Tests(AsosiyModel):
+    mavzu_id = models.ForeignKey(Mavzus, on_delete=models.CASCADE)
     savol = models.CharField(max_length=500)
-    a = models.CharField(max_length=255)
-    b = models.CharField(max_length=255)
-    c = models.CharField(max_length=255)
-    d = models.CharField(max_length=255)
-    togri = models.CharField(max_length=25, choices=JAVOB_CHOICES, default="A")
-    
+    variant_a = models.CharField(max_length=255)
+    variant_b = models.CharField(max_length=255)
+    variant_c = models.CharField(max_length=255)
+    variant_d = models.CharField(max_length=255)
+    togri_javob = models.CharField(max_length=1, choices=[
+        ('A', 'A'),
+        ('B', 'B'),
+        ('C', 'C'),
+        ('D', 'D'),
+    ])
+
     def __str__(self):
         return self.savol 
     
+    
 class Talabas(AsosiyModel):
-    tast_id = models.ForeignKey(Testlar, on_delete=models.CASCADE)
+    tast_id = models.ForeignKey(Tests, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     fakultet_id = models.ForeignKey(Fakultets, on_delete=models.CASCADE)
     yonalish_id = models.ForeignKey(Yonalishs, on_delete=models.CASCADE)
