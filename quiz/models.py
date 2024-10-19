@@ -33,14 +33,18 @@ class Tests(AsosiyModel):
         return self.savol 
     
     
-class Talabas(AsosiyModel):
-    tast_id = models.ForeignKey(Tests, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    
+class Natijas(AsosiyModel):
+    mavzu_id = models.ForeignKey(Mavzus, on_delete=models.CASCADE)
     fakultet_id = models.ForeignKey(Fakultets, on_delete=models.CASCADE)
     yonalish_id = models.ForeignKey(Yonalishs, on_delete=models.CASCADE)
     kurs_id = models.ForeignKey(Kurs, on_delete=models.CASCADE)
     guruh_id = models.ForeignKey(Guruhs, on_delete=models.CASCADE)
-    
+    talaba = models.CharField(max_length=255)
+    togri = models.IntegerField(default=0)
+    notogri = models.IntegerField(default=0)
+    jami = models.IntegerField(default=0)
+        
 
     def __str__(self):
-        return self.name
+        return self.talaba

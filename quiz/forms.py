@@ -1,5 +1,5 @@
 from django import forms
-from quiz.models import Mavzus, Tests
+from quiz.models import Mavzus, Tests, Natijas
 
 
 
@@ -53,3 +53,8 @@ class TestAnswerForm(forms.Form):
                 label=test.savol,
                 widget=forms.RadioSelect
             )
+
+class NatijaForm(forms.ModelForm):
+    class Meta:
+        model = Natijas
+        fields = ['mavzu_id', 'fakultet_id', 'yonalish_id', 'kurs_id', 'guruh_id', 'talaba', 'togri', 'notogri']

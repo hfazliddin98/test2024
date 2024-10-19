@@ -1,42 +1,97 @@
-{% extends "asosiy/base.html" %}
-{% load static %}
-{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testni yechish</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
 
+<div class="container mt-5">
+    <h1>Testni yechish</h1>
 
-{% block content %}
-  <div class="container-fluid">
-    <div class="row flex-nowrap">
-
-      {% include "asosiy/sidebar.html" %}
-
-      <!-- content -->
-      <div class="col">
-        
-        <div class="row mx-3 px-2">
-          <h1 class="text-center my-5">Mavzu qo`shish</h1>
-
-          <div class="row py-2">
-            <form method="post">
-                {% csrf_token %}
-                {% for test, variants in tests %}
-                    <fieldset>
-                        <legend>{{ test.savol }}</legend>
-                        {% for variant in variants %}
-                            <label>
-                                <input type="radio" name="test_{{ test.id }}" value="{{ variant.0 }}">
-                                {{ variant.1 }}
-                            </label><br>
-                        {% endfor %}
-                    </fieldset>
-                {% endfor %}
-                <button type="submit">Baholash</button>
-            </form>
-          </div>
-
+    <!-- Agar xatolik bo'lsa, foydalanuvchiga bildirish -->
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
         </div>
-      </div>
+    {% endif %}
 
-    </div>
-  </div>
+    <form method="POST">
+        {% csrf_token %}
 
-{% endblock %}
+        <!-- Talaba ma'lumotlarini kiritish uchun bo'lim -->
+        <div class="form-group">
+            <label for="talaba_name">Ismingiz:</label>
+            <input type="text" class="form-control" name="talaba_name" id="talaba_name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="fakultet_id">Fakultet:</label>
+            <select class="form-control" name="fakultet_id" id="fakultet_id" required>
+                <option value="">Fakultetni tanlang</option>
+                {% for fakultet in fakultetlar %}
+                    <option value="{{ fakultet.id }}">{{ fakultet.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="yonalish_id">Yo'nalish:</label>
+            <select class="form-control" name="yonalish_id" id="yonalish_id" required>
+                <option value="">Yo'nalishni tanlang</option>
+                {% for yonalish in yonalishlar %}
+                    <option value="{{ yonalish.id }}">{{ yonalish.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="kurs_id">Kurs:</label>
+            <select class="form-control" name="kurs_id" id="kurs_id" required>
+                <option value="">Kursni tanlang</option>
+                {% for kurs in kurslar %}
+                    <option value="{{ kurs.id }}">{{ kurs.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="guruh_id">Guruh:</label>
+            <select class="form-control" name="guruh_id" id="guruh_id" required>
+                <option value="">Guruhni tanlang</option>
+                {% for guruh in guruhlar %}
+                    <option value="{{ guruh.id }}">{{ guruh.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Test savollari va variantlarini ko'rsatish -->
+        <h3>Test savollari</h3>
+        {% for test, variants in tests %}
+            <div class="form-group">
+                <label>{{ forloop.counter }}. {{ test.savol }}</label>
+                {% for variant in variants %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="test_{{ test.id }}" id="variant_{{ variant.0 }}_{{ test.id }}" value="{{ variant.0 }}" required>
+                        <label class="form-check-label" for="variant_{{ variant.0 }}_{{ test.id }}">
+                            {{ variant.0 }}: {{ variant.1 }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <!-- Testni yuborish tugmasi -->
+        <button type="submit" class="btn btn-primary">Testni topshirish</button>
+    </form>
+</div>
+
+<!-- Bootstrap JS, Popper.js, va jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

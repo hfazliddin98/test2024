@@ -1,5 +1,5 @@
 from django.contrib import admin
-from quiz.models import Mavzus, Tests, Talabas
+from quiz.models import Mavzus, Tests, Natijas
 
 
  
@@ -13,4 +13,9 @@ class TestsAdmin(admin.ModelAdmin):
 class MavzusAdmin(admin.ModelAdmin):
     list_display = ['id', 'mavzu']
     search_fields = ['mavzu']
+
+@admin.register(Natijas)
+class NatijasAdmin(admin.ModelAdmin):
+    list_display = ['id', 'talaba']
+    search_fields = ['talaba']
 
