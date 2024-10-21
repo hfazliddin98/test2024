@@ -11,6 +11,7 @@ class AsosiyModel(models.Model):
         abstract = True
 
 
+
 class Fakultets(AsosiyModel):
     name = models.CharField(max_length=255)
 

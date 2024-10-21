@@ -48,3 +48,6 @@ class Natijas(AsosiyModel):
 
     def __str__(self):
         return self.talaba
+    
+    class Meta:
+        ordering = ('-created_at',)

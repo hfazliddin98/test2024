@@ -24,7 +24,10 @@
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">N</th>
+                <th scope="col">Fakultet</th>
+                <th scope="col">Yonalish</th>
+                <th scope="col">Kurs</th>
+                <th scope="col">Guruh</th>
                 <th scope="col">Talaba</th>
                 <th scope="col">To`gri</th>
                 <th scope="col">Noto`g`ri</th>
@@ -34,7 +37,10 @@
             <tbody>
               {% for a in page_obj %}
               <tr>
-                <th scope="row">{{a.id}}</th>
+                <td>{{a.fakultet_id.name}}</td>
+                <td>{{a.yonalish_id.name}}</td>
+                <td>{{a.kurs_id.name}}</td>
+                <td>{{a.guruh_id.name}}</td>
                 <td>{{a.talaba}}</td>
                 <td>{{a.togri}}</td>                
                 <td>{{a.notogri}}</td>                
