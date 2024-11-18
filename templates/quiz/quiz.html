@@ -1,11 +1,10 @@
-
-
 {% extends "asosiy/base.html" %}
 {% load static %}
 {% load django_bootstrap5 %}
 
 
 {% block content %}
+
   <div class="container-fluid">
     <div class="row flex-nowrap">
 
@@ -21,7 +20,8 @@
             <h2>{{ test.savol }}</h2>
             <form method="post">
                 {% csrf_token %}
-               {{form.as_p}}
+
+                {% bootstrap_form form %}
                 <button type="submit">Submit</button>
             </form>
           </div>
@@ -31,5 +31,7 @@
 
     </div>
   </div>
+
+   
 
 {% endblock %}

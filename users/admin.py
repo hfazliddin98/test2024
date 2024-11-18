@@ -13,8 +13,8 @@ class YonalishsAdmin(admin.ModelAdmin):
 
 @admin.register(Kurs)
 class KursAdmin(admin.ModelAdmin):
-    list_display = ['yonalish_id', 'name']
+    list_display = ['name']
 
 @admin.register(Guruhs)
 class GuruhsAdmin(admin.ModelAdmin):
-    list_display = ['kurs_id', 'name']
+    list_display = ['name']

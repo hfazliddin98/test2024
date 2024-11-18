@@ -10,6 +10,10 @@ class Mavzus(AsosiyModel):
     qrlink = models.CharField(max_length=255, blank=True)
     yaratish = models.BooleanField(default=False)
 
+    
+    class Meta:
+        ordering = ('-mavzu',)
+
     def __str__(self):
         return self.mavzu
 
@@ -29,6 +33,9 @@ class Tests(AsosiyModel):
         ('D', 'D'),
     ])
 
+    class Meta:
+        ordering = ('-savol',)
+
     def __str__(self):
         return self.savol 
     
@@ -45,9 +52,9 @@ class Natijas(AsosiyModel):
     notogri = models.IntegerField(default=0)
     jami = models.IntegerField(default=0)
         
+    class Meta:
+        ordering = ('-talaba',)
 
     def __str__(self):
         return self.talaba
     
-    class Meta:
-        ordering = ('-created_at',)

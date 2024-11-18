@@ -179,40 +179,11 @@ def natijalar(request):
         return render(request, 'quiz/natijalar.html', context)
 
 
-    else:
+    else: 
         return render(request, 'asosiy/404.html')
 
 
-
-
-# @csrf_exempt
-# def test_bajarish(request, pk):
-
-#     tests = Tests.objects.filter(mavzu_id=pk)
-
-#     if tests:
-#         if request.method == 'POST':
-#             form = TestAnswerForm(request.POST, tests=tests)
-#             if form.is_valid():
-#                 data = form.cleaned_data['savol']
-#                 print(data)
-#                 score = 0
-#                 for test in tests:
-#                     user_answer = form.cleaned_data[f'test_{test.id}']
-#                     if user_answer == test.to_gri_javob:  # To'g'ri javobni tekshirish
-#                         score += 1
-                
-#                 return render(request, 'test_result.html', {'score': score, 'total': len(tests)})
-#         else:
-#             form = TestAnswerForm(tests=tests)
-
-        
-#             return render(request, 'quiz/quiz.html', {'form':form})
-#     else:
-
-#         return HttpResponse('data')
-
- 
+from users.forms import YonalishsForm
 
 @csrf_exempt
 def test_bajarish(request, pk):
@@ -229,12 +200,11 @@ def test_bajarish(request, pk):
         random.shuffle(variants)
         shuffled_tests.append((test, variants))
 
-    fakultetlar = Fakultets.objects.all() 
-    yonalishlar = Yonalishs.objects.all() 
     kurslar = Kurs.objects.all()          
     guruhlar = Guruhs.objects.all()      
 
     if request.method == 'POST':
+        yonalishform = YonalishsForm(request.POST)
         form = TestAnswerForm(request.POST, tests=shuffled_tests)
         if form.is_valid():
             score = 0
@@ -246,19 +216,19 @@ def test_bajarish(request, pk):
                 else:
                     incorrect_answers += 1
 
-            fakultet_id = request.POST.get('fakultet_id')
-            yonalish_id = request.POST.get('yonalish_id')
+            fakultet_id = yonalishform.cleaned_data('fakultet')
+            yonalish_id = yonalishform.cleaned_data('name')
             kurs_id = request.POST.get('kurs_id')
             guruh_id = request.POST.get('guruh_id')
             talaba_name = request.POST.get('talaba_name')
 
+
             if not talaba_name:
                 return render(request, 'quiz/take_test.html', {
                     'form': form,
+                    'yonalishform': yonalishform,
                     'tests': shuffled_tests,
                     'error': 'Iltimos, ismingizni kiriting!',
-                    'fakultetlar': fakultetlar,
-                    'yonalishlar': yonalishlar,
                     'kurslar': kurslar,
                     'guruhlar': guruhlar
                 })
@@ -281,13 +251,13 @@ def test_bajarish(request, pk):
             })
     else:
         form = TestAnswerForm(tests=shuffled_tests)
+        yonalishform = YonalishsForm()
 
     
     context = {
         'form': form,
+        'yonalishform': yonalishform,
         'tests': shuffled_tests,
-        'fakultetlar': fakultetlar,
-        'yonalishlar': yonalishlar,
         'kurslar': kurslar,
         'guruhlar': guruhlar
     }

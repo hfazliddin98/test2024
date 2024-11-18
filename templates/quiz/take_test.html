@@ -1,3 +1,7 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +13,31 @@
 <body>
 
 <div class="container mt-5">
-    <h1>Testni yechish</h1>
+    <script>
+        $(document).ready(function() {
+            $('#id_fakultet').change(function() {
+                var fakultetId = $(this).val();
+                $.ajax({
+                    url: '/get-yonalishlar/',
+                    data: {
+                        'fakultet_id': fakultetId
+                    },
+                    success: function(data) {
+                        $('#id_yonalish').html('<option value="">Select Yonalish</option>');
+                        $.each(data.yonalishlar, function(key, value) {
+                            $('#id_yonalish').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
+                        console.log(data.yonalishlar);
+                        
+                    }
+                });
+            });       
+            
+        });
+    </script>
 
-    <!-- Agar xatolik bo'lsa, foydalanuvchiga bildirish -->
-    {% if error %}
-        <div class="alert alert-danger">
-            {{ error }}
-        </div>
-    {% endif %}
+
+    <h1>Testni yechish</h1>
 
     <form method="POST">
         {% csrf_token %}
@@ -26,26 +47,7 @@
             <label for="talaba_name">Ismingiz:</label>
             <input type="text" class="form-control" name="talaba_name" id="talaba_name" required>
         </div>
-
-        <div class="form-group">
-            <label for="fakultet_id">Fakultet:</label>
-            <select class="form-control" name="fakultet_id" id="fakultet_id" required>
-                <option value="">Fakultetni tanlang</option>
-                {% for fakultet in fakultetlar %}
-                    <option value="{{ fakultet.id }}">{{ fakultet.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="yonalish_id">Yo'nalish:</label>
-            <select class="form-control" name="yonalish_id" id="yonalish_id" required>
-                <option value="">Yo'nalishni tanlang</option>
-                {% for yonalish in yonalishlar %}
-                    <option value="{{ yonalish.id }}">{{ yonalish.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        {% bootstrap_form yonalishform %}
 
         <div class="form-group">
             <label for="kurs_id">Kurs:</label>
