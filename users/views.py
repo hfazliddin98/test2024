@@ -1,3 +1,14 @@
+@csrf_exempt
+def get_kurslar(request):
+    yonalish_id = request.GET.get('yonalish_id')
+    kurslar = list(Kurs.objects.filter(yonalish=yonalish_id).values('id', 'name'))
+    return JsonResponse({'kurslar': kurslar})
+
+@csrf_exempt
+def get_guruhlar(request):
+    kurs_id = request.GET.get('kurs_id')
+    guruhlar = list(Guruhs.objects.filter(kurs=kurs_id).values('id', 'name'))
+    return JsonResponse({'guruhlar': guruhlar})
 import openpyxl
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required

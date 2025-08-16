@@ -30,5 +30,7 @@ urlpatterns = [
     path('natijalar/', views.admin_natijalar, name='admin_natijalar'),
     path('natijalar/export/', views.export_natijalar_excel, name='export_natijalar_excel'),
     path('get-yonalishlar/', views.get_yonalishlar, name='get_yonalishlar'),
+    path('get-kurslar/', views.get_kurslar, name='get_kurslar'),
+    path('get-guruhlar/', views.get_guruhlar, name='get_guruhlar'),
     path('chiqish/', views.chiqish_user, name='chiqish_user'),
 ]

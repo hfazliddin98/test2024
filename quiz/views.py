@@ -332,8 +332,8 @@ def test_bajarish(request, pk):
         ]
         random.shuffle(variants)
         shuffled_tests.append((test, variants))
-    kurslar = Kurs.objects.all()
-    guruhlar = Guruhs.objects.all()
+    from users.models import Fakultets
+    fakultetlar = Fakultets.objects.all()
     if request.method == 'POST':
         yonalishform = YonalishForm(request.POST)
         form = TestAnswerForm(request.POST, tests=shuffled_tests)
@@ -357,8 +357,7 @@ def test_bajarish(request, pk):
                     'yonalishform': yonalishform,
                     'tests': shuffled_tests,
                     'error': 'Iltimos, ismingizni kiriting!',
-                    'kurslar': kurslar,
-                    'guruhlar': guruhlar
+                    'fakultetlar': fakultetlar
                 })
             Natijas.objects.create(
                 mavzu_id=pk,
@@ -384,7 +383,6 @@ def test_bajarish(request, pk):
         'form': form,
         'yonalishform': yonalishform,
         'tests': shuffled_tests,
-        'kurslar': kurslar,
-        'guruhlar': guruhlar
+        'fakultetlar': fakultetlar
     }
     return render(request, 'quiz/take_test.html', context)
