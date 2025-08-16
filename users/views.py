@@ -25,13 +25,17 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def get_kurslar(request):
     yonalish_id = request.GET.get('yonalish_id')
-    kurslar = list(Kurs.objects.filter(yonalish=yonalish_id).values('id', 'name'))
+    if not yonalish_id:
+        return JsonResponse({'kurslar': []})
+    kurslar = list(Kurs.objects.filter(yonalish_id=yonalish_id).values('id', 'name'))
     return JsonResponse({'kurslar': kurslar})
 
 @csrf_exempt
 def get_guruhlar(request):
     kurs_id = request.GET.get('kurs_id')
-    guruhlar = list(Guruhs.objects.filter(kurs=kurs_id).values('id', 'name'))
+    if not kurs_id:
+        return JsonResponse({'guruhlar': []})
+    guruhlar = list(Guruhs.objects.filter(kurs_id=kurs_id).values('id', 'name'))
     return JsonResponse({'guruhlar': guruhlar})
 
 # ===== ADMIN NATIJALAR EXPORT =====
@@ -429,7 +433,9 @@ def oqituvchi_delete(request, pk):
 @csrf_exempt
 def get_yonalishlar(request):
     fakultet_id = request.GET.get('fakultet_id')
-    yonalishlar = list(Yonalishs.objects.filter(fakultet=fakultet_id).values('id', 'name'))
+    if not fakultet_id:
+        return JsonResponse({'yonalishlar': []})
+    yonalishlar = list(Yonalishs.objects.filter(fakultet_id=fakultet_id).values('id', 'name'))
     return JsonResponse({'yonalishlar': yonalishlar})
 
 
