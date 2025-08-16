@@ -1,0 +1,57 @@
+/* Custom style for oqituvchi sahifalari */
+.oqituvchi-form-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.08);
+  border: none;
+}
+.oqituvchi-form-card .card-body {
+  padding: 2.5rem 2rem;
+}
+.oqituvchi-form-card h2 {
+  font-weight: 700;
+  color: #2d3a4b;
+  margin-bottom: 2rem;
+}
+.oqituvchi-form-card label.form-label {
+  font-weight: 500;
+  color: #3a3a3a;
+}
+/* Inputlar uchun zamonaviy dizayn */
+.oqituvchi-form-card .form-control {
+  border-radius: 0.75rem;
+  border: 1.5px solid #e0e6ed;
+  background: #f8fafc;
+  font-size: 1.08rem;
+  padding: 0.75rem 1.1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 4px 0 rgba(80,120,200,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.oqituvchi-form-card .form-control:focus {
+  border-color: #4f8cff;
+  background: #fff;
+  box-shadow: 0 0 0 3px #e3f0ff, 0 2px 8px 0 rgba(80,120,200,0.08);
+}
+.oqituvchi-form-card label.form-label {
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.01em;
+}
+.oqituvchi-form-card .row.g-3 {
+  row-gap: 1.2rem;
+}
+.oqituvchi-form-card .btn-primary {
+  background: linear-gradient(90deg, #4f8cff 0%, #3358ff 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.oqituvchi-form-card .btn-secondary {
+  background: #e0e6ed;
+  color: #2d3a4b;
+  border: none;
+}
+.oqituvchi-form-card .btn {
+  border-radius: 0.75rem;
+  min-width: 120px;
+}

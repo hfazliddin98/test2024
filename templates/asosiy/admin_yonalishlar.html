@@ -1,0 +1,105 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center fw-bold">Yo‘nalishlar</h2>
+          <form method="get" class="mb-4 d-flex flex-wrap gap-2 align-items-center justify-content-between bg-light p-3 rounded-3 shadow-sm">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <label for="fakultet_filter" class="form-label mb-0 fw-semibold">Fakultet:</label>
+              <select name="fakultet" id="fakultet_filter" class="form-select w-auto" onchange="this.form.submit()">
+                <option value="">Barchasi</option>
+                {% for fakultet in fakultetlar %}
+                  <option value="{{ fakultet.pk }}" {% if fakultet.pk|stringformat:'s' == request.GET.fakultet %}selected{% endif %}>{{ fakultet.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="button" class="btn btn-primary rounded-3 px-4 py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#addYonalishModal">+ Yangi yo‘nalish qo‘shish</button>
+          </form>
+
+          <!-- Modal for adding yonalish -->
+          <div class="modal fade{% if modal_open %} show d-block{% endif %}" id="addYonalishModal" tabindex="-1" aria-labelledby="addYonalishModalLabel" aria-hidden="true" {% if modal_open %}style="background:rgba(0,0,0,0.3);"{% endif %}>
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <form method="post" action="{% url 'yonalish_create' %}{% if request.GET.fakultet or selected_fakultet %}?fakultet={{ request.GET.fakultet|default:selected_fakultet }}{% endif %}">
+                  {% csrf_token %}
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="addYonalishModalLabel">Yangi yo‘nalish qo‘shish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeYonalishModal()"></button>
+                  </div>
+                  <div class="modal-body">
+                    {% if modal_error %}
+                      <div class="alert alert-danger py-2 small">{{ modal_error }}</div>
+                    {% endif %}
+                    <div class="mb-3">
+                      <label for="modal_yonalish_name" class="form-label">Yo‘nalish nomi</label>
+                      <input type="text" class="form-control" id="modal_yonalish_name" name="name" placeholder="Masalan: 1, 2, 3, ..." required>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeYonalishModal()">Bekor qilish</button>
+                    <button type="submit" class="btn btn-primary">Qo‘shish</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <script>
+          function closeYonalishModal() {
+            var modal = document.getElementById('addYonalishModal');
+            modal.classList.remove('show', 'd-block');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            document.body.style = '';
+            var backdrops = document.getElementsByClassName('modal-backdrop');
+            while(backdrops.length > 0){ backdrops[0].parentNode.removeChild(backdrops[0]); }
+          }
+          </script>
+          {% if modal_open %}
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              var modal = document.getElementById('addYonalishModal');
+              modal.classList.add('show', 'd-block');
+              modal.style.display = 'block';
+              document.body.classList.add('modal-open');
+              document.body.style.overflow = 'hidden';
+            });
+          </script>
+          {% endif %}
+          <div class="table-responsive rounded-4">
+            <table class="table table-hover align-middle bg-white rounded-4 shadow-sm">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 60px;">#</th>
+                  <th>Yo‘nalish nomi</th>
+                  <th>Fakultet</th>
+                  <th class="text-end" style="width: 180px;">Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for yonalish in yonalishlar %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ yonalish.name }}</td>
+                  <td>{{ yonalish.fakultet.name }}</td>
+                  <td class="text-end">
+                    <a href="{% url 'yonalish_update' yonalish.pk %}" class="btn btn-sm btn-outline-primary me-1">Tahrirlash</a>
+                    <a href="{% url 'yonalish_delete' yonalish.pk %}" class="btn btn-sm btn-outline-danger">O‘chirish</a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-muted">Yo‘nalishlar mavjud emas.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow rounded-4 border-0 mb-4">
+                <div class="card-body p-4">
+                    <h2 class="mb-4 text-center fw-bold">Admin paneli</h2>
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <a href="{% url 'admin_oqituvchilar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-user-tie text-primary"></i> O'qituvchilar
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'admin_fakultetlar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-university text-success"></i> Fakultetlar
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'admin_yonalishlar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-route text-info"></i> Yo'nalishlar
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'admin_kurslar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-graduation-cap text-warning"></i> Kurslar
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'admin_guruhlar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-users text-danger"></i> Guruhlar
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'admin_natijalar' %}" class="btn btn-light w-100 py-3 rounded-3 shadow-sm d-flex align-items-center gap-2">
+                                <i class="fa fa-chart-bar text-secondary"></i> Natijalar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,233 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-white p-4 border-0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h2 class="m-0 fw-bold">Natijalar</h2>
+            <div class="d-flex flex-wrap gap-2">
+              <!-- Filter Dropdown -->
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="fakultetFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa fa-filter me-2"></i>Fakultet
+                </button>
+                <ul class="dropdown-menu shadow-sm" aria-labelledby="fakultetFilter">
+                  <li><a class="dropdown-item" href="#">Barcha Fakultetlar</a></li>
+                  {% for fakultet in fakultetlar %}
+                    <li><a class="dropdown-item" href="?fakultet={{ fakultet.pk }}">{{ fakultet.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+              
+              <!-- Yonalish filter if fakultet is selected -->
+              {% if selected_fakultet %}
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="yonalishFilter" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa fa-filter me-2"></i>Yo'nalish
+                </button>
+                <ul class="dropdown-menu shadow-sm" aria-labelledby="yonalishFilter">
+                  <li><a class="dropdown-item" href="?fakultet={{ selected_fakultet.pk }}">Barcha Yo'nalishlar</a></li>
+                  {% for yonalish in yonalishlar %}
+                    <li><a class="dropdown-item" href="?fakultet={{ selected_fakultet.pk }}&yonalish={{ yonalish.pk }}">{{ yonalish.name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              
+              <!-- Export buttons -->
+              <button type="button" class="btn btn-success">
+                <i class="fa fa-file-excel me-2"></i>Excel
+              </button>
+              <button type="button" class="btn btn-danger">
+                <i class="fa fa-file-pdf me-2"></i>PDF
+              </button>
+              <button type="button" class="btn btn-info text-white">
+                <i class="fa fa-print me-2"></i>Chop etish
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <!-- Statistics Cards -->
+          <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+              <div class="card border-0 bg-primary bg-gradient text-white">
+                <div class="card-body">
+                  <h5 class="card-title">Jami Natijalar</h5>
+                  <h2 class="fw-bold mb-0">{{ natijalar_count }}</h2>
+                  <div class="mt-3 d-flex align-items-center">
+                    <span><i class="fa fa-users me-2"></i>{{ talabalar_count }} talaba</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card border-0 bg-success bg-gradient text-white">
+                <div class="card-body">
+                  <h5 class="card-title">O'rtacha Ball</h5>
+                  <h2 class="fw-bold mb-0">{{ ortacha_ball }}%</h2>
+                  <div class="mt-3">
+                    <div class="progress">
+                      <div class="progress-bar bg-white" role="progressbar" style="width: {{ ortacha_ball }}%" aria-valuenow="{{ ortacha_ball }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card border-0 bg-info bg-gradient text-white">
+                <div class="card-body">
+                  <h5 class="card-title">Eng Yuqori Ball</h5>
+                  <h2 class="fw-bold mb-0">{{ eng_yuqori_ball }}%</h2>
+                  <div class="mt-3">
+                    <span><i class="fa fa-user-graduate me-2"></i>{{ eng_yuqori_talaba }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+              <div class="card border-0 bg-warning bg-gradient text-white">
+                <div class="card-body">
+                  <h5 class="card-title">Mavzular</h5>
+                  <h2 class="fw-bold mb-0">{{ mavzular_count }}</h2>
+                  <div class="mt-3">
+                    <span><i class="fa fa-book me-2"></i>{{ testlar_count }} testlar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search bar -->
+          <div class="row mb-4">
+            <div class="col">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Talaba nomi, guruh, yo'nalish bo'yicha qidirish...">
+                <button class="btn btn-primary" type="button">
+                  <i class="fa fa-search me-1"></i> Qidirish
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Results Table -->
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Talaba</th>
+                  <th scope="col">Fakultet</th>
+                  <th scope="col">Yo'nalish</th>
+                  <th scope="col">Kurs</th>
+                  <th scope="col">Guruh</th>
+                  <th scope="col">Mavzu</th>
+                  <th scope="col" class="text-success">To'g'ri</th>
+                  <th scope="col" class="text-danger">Noto'g'ri</th>
+                  <th scope="col" class="text-primary">Jami</th>
+                  <th scope="col">Foizda</th>
+                  <th scope="col">Sana</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for natija in natijalar %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ natija.talaba }}</td>
+                  <td>{{ natija.fakultet.name }}</td>
+                  <td>{{ natija.yonalish.name }}</td>
+                  <td>{{ natija.kurs.name }}</td>
+                  <td>{{ natija.guruh.name }}</td>
+                  <td>{{ natija.mavzu.mavzu }}</td>
+                  <td class="text-success">{{ natija.togri }}</td>
+                  <td class="text-danger">{{ natija.notogri }}</td>
+                  <td class="text-primary">{{ natija.jami }}</td>
+                  <td>
+                    {% if natija.jami > 0 %}
+                      {% widthratio natija.togri natija.jami 100 %}%
+                    {% else %}
+                      0%
+                    {% endif %}
+                  </td>
+                  <td>{{ natija.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="12" class="text-center py-4">
+                    <i class="fa fa-info-circle me-2 text-muted"></i>
+                    Natijalar topilmadi
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          {% if natijalar.has_other_pages %}
+          <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+              {% if natijalar.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="First">
+                  <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ natijalar.previous_page_number }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% endif %}
+              
+              {% for i in natijalar.paginator.page_range %}
+                {% if natijalar.number == i %}
+                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+                {% elif i > natijalar.number|add:'-3' and i < natijalar.number|add:'3' %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ i }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}">{{ i }}</a>
+                </li>
+                {% endif %}
+              {% endfor %}
+              
+              {% if natijalar.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ natijalar.next_page_number }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ natijalar.paginator.num_pages }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Last">
+                  <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality
+  document.getElementById('searchInput').addEventListener('keyup', function() {
+    const searchText = this.value.toLowerCase();
+    const table = document.querySelector('table');
+    const rows = table.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+      const rowText = row.textContent.toLowerCase();
+      if (rowText.includes(searchText)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+</script>
+{% endblock %}

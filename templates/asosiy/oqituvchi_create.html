@@ -1,0 +1,173 @@
+{% extends 'asosiy/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  .oqituvchi-form-card {
+    background: #fff;
+    border-radius: 1.25rem;
+    box-shadow: 0 6px 32px 0 rgba(60,80,180,0.10);
+    border: none;
+    overflow: hidden;
+  }
+  .oqituvchi-form-card .card-body {
+    padding: 0.7rem 0.2rem 0.7rem 0.2rem;
+  }
+  .oqituvchi-form-card h2 {
+    font-weight: 800;
+    color: #3358ff;
+    margin-bottom: 0.7rem;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-size: 1.05rem;
+  }
+  .oqituvchi-form-card h2 .fa-user-plus {
+    color: #4f8cff;
+    font-size: 1.5em;
+  }
+  .oqituvchi-form-card label.form-label {
+    font-weight: 600;
+    color: #2d3a4b;
+    margin-bottom: 0.08rem;
+    letter-spacing: 0.01em;
+    font-size: 0.89rem;
+  }
+  .oqituvchi-form-card .form-control {
+    border-radius: 0.35rem;
+    border: 1px solid #e0e6ed;
+    background: #f8fafc;
+    font-size: 0.85rem;
+    padding: 0.28rem 0.45rem;
+    margin-bottom: 0.07rem;
+    box-shadow: 0 1px 2px 0 rgba(80,120,200,0.03);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .oqituvchi-form-card .form-control:focus {
+    border-color: #3358ff;
+    background: #fff;
+    box-shadow: 0 0 0 3px #e3f0ff, 0 2px 8px 0 rgba(80,120,200,0.10);
+  }
+  .oqituvchi-form-card .row.g-4 {
+    row-gap: 0.3rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .oqituvchi-form-card .btn-primary {
+    background: linear-gradient(90deg, #4f8cff 0%, #3358ff 100%);
+    border: none;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px 0 rgba(80,120,200,0.10);
+    transition: background 0.2s;
+  }
+  .oqituvchi-form-card .btn-primary:hover {
+    background: linear-gradient(90deg, #3358ff 0%, #4f8cff 100%);
+  }
+  .oqituvchi-form-card .btn-secondary {
+    background: #e0e6ed;
+    color: #2d3a4b;
+    border: none;
+    font-weight: 600;
+  }
+  .oqituvchi-form-card .btn {
+    border-radius: 0.35rem;
+    min-width: 80px;
+    padding: 0.28rem 0.7rem;
+    font-size: 0.85rem;
+  }
+</style>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9 col-md-9">
+      <div class="card oqituvchi-form-card">
+        <div class="card-body">
+          <h2 class="mb-4 text-center fw-bold text-primary">
+            <i class="fa fa-user-plus"></i> Yangi o‘qituvchi qo‘shish
+          </h2>
+          <form id="oqituvchiForm" method="post" autocomplete="off" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row g-4">
+              <div class="col-12">
+                <label for="id_username" class="form-label">Foydalanuvchi nomi</label>
+                <input type="text" name="username" id="id_username" class="form-control" placeholder="Foydalanuvchi nomi" required>
+                {% if form.errors.username %}
+                  <div class="text-danger small mt-1">{{ form.errors.username.0|default:"Foydalanuvchi nomi to‘ldirilishi shart!" }}</div>
+                {% endif %}
+              </div>
+              <div class="col-12">
+                <label for="id_first_name" class="form-label">Ism</label>
+                <input type="text" name="first_name" id="id_first_name" class="form-control" placeholder="Ism" required>
+                {% if form.errors.first_name %}
+                  <div class="text-danger small mt-1">{{ form.errors.first_name.0|default:"Ism to‘ldirilishi shart!" }}</div>
+                {% endif %}
+              </div>
+              <div class="col-12">
+                <label for="id_last_name" class="form-label">Familiya</label>
+                <input type="text" name="last_name" id="id_last_name" class="form-control" placeholder="Familiya" required>
+                {% if form.errors.last_name %}
+                  <div class="text-danger small mt-1">{{ form.errors.last_name.0|default:"Familiya to‘ldirilishi shart!" }}</div>
+                {% endif %}
+              </div>
+              <div class="col-12">
+
+              </div>
+              <div class="col-12">
+                <label for="id_password" class="form-label">Parol</label>
+                <div class="input-group">
+                  <input type="password" name="password" id="id_password" class="form-control" placeholder="Parol" required>
+                  <span class="input-group-text bg-white border-start-0" style="cursor:pointer" onclick="togglePassword('id_password', this)">
+                    <i class="fa fa-eye-slash"></i>
+                  </span>
+                </div>
+                {% if form.errors.password %}
+                  <div class="text-danger small mt-1">{{ form.errors.password.0|default:"Parol to‘ldirilishi shart!" }}</div>
+                {% endif %}
+              </div>
+              <div class="col-12">
+                <label for="id_password2" class="form-label">Parolni tasdiqlash</label>
+                <div class="input-group">
+                  <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Parolni tasdiqlash" required>
+                  <span class="input-group-text bg-white border-start-0" style="cursor:pointer" onclick="togglePassword('id_password2', this)">
+                    <i class="fa fa-eye-slash"></i>
+                  </span>
+                </div>
+                {% if form.errors.password2 %}
+                  <div class="text-danger small mt-1">{{ form.errors.password2.0|default:"Parollar mos emas!" }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="mt-5 d-flex justify-content-center gap-3">
+              <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm">Saqlash</button>
+              <a href="{% url 'admin_oqituvchilar' %}" class="btn btn-secondary px-4 py-2">Bekor qilish</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function togglePassword(inputId, el) {
+  const input = document.getElementById(inputId);
+  const icon = el.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  } else {
+    input.type = 'password';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  }
+}
+document.getElementById('oqituvchiForm').addEventListener('submit', function(e) {
+  if (!this.checkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.classList.add('was-validated');
+  }
+});
+</script>
+{% endblock %}

@@ -6,51 +6,38 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row flex-nowrap">
-
-        {% include "asosiy/sidebar.html" %}
-
-        <!-- content -->
-        <div class="col">
-            <div class="row row-cols-1 row-cols-md-3 g-4 mt-4 mx-2">
-
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="card h-100 text-center">
-                        <i class="fa-solid fa-vial-virus fa-6x p-2"></i>
-                        <div class="card-body">
-                            <h3 class="card-title">Mavzular</h3>                            
-                        </div>
-                        <div class="card-footer py-3">
-                            <a href="{% url 'mavzular' %}" class="text-body-secondary h6">Mavzular</a>
+    <div class="row">
+        <div class="col py-4">
+            <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
+                <div class="col">
+                    <div class="card h-100 text-center shadow-sm border-0">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <i class="fa-solid fa-vial-virus fa-4x text-primary mb-3"></i>
+                            <h4 class="card-title mb-2">Mavzular</h4>
+                            <a href="{% url 'teacher_mavzular' %}" class="btn btn-outline-primary mt-2">Mavzular</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="card h-100 text-center">
-                        <i class="fa-solid fa-envelope-open-text fa-6x p-2"></i>
-                        <div class="card-body">
-                            <h3 class="card-title">Testlar</h3>                            
-                        </div>
-                        <div class="card-footer py-3">
-                            <a href="{% url 'testlar' %}" class="text-body-secondary h6">Testlar</a>
+                <div class="col">
+                    <div class="card h-100 text-center shadow-sm border-0">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <i class="fa-solid fa-envelope-open-text fa-4x text-success mb-3"></i>
+                            <h4 class="card-title mb-2">Testlar</h4>
+                            <a href="{% url 'teacher_testlar' %}" class="btn btn-outline-success mt-2">Testlar</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 col-sm-12">
-                    <div class="card h-100 text-center">
-                        <i class="fa-solid fa-square-poll-vertical fa-6x p-2"></i>
-                        <div class="card-body">
-                            <h3 class="card-title">Natijalar</h3>                            
-                        </div>
-                        <div class="card-footer py-3">
-                            <a href="{% url 'natijalar' %}" class="text-body-secondary h6">Natijalar</a>
+                <div class="col">
+                    <div class="card h-100 text-center shadow-sm border-0">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <i class="fa-solid fa-square-poll-vertical fa-4x text-warning mb-3"></i>
+                            <h4 class="card-title mb-2">Natijalar</h4>
+                            <a href="{% url 'teacher_natijalar' %}" class="btn btn-outline-warning mt-2">Natijalar</a>
                         </div>
                     </div>
                 </div>
-                
             </div>
         </div>
-
     </div>
 </div>
 {% endblock %}

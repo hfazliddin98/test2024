@@ -1,0 +1,135 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-white p-4 border-0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h2 class="m-0 fw-bold">Mavzular</h2>
+            <div>
+              <a href="{% url 'mavzu' %}" class="btn btn-primary">
+                <i class="fa fa-plus me-2"></i>Yangi mavzu
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-body p-4">
+          <!-- Search bar -->
+          <div class="row mb-4">
+            <div class="col">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Mavzu nomi bo'yicha qidirish...">
+                <button class="btn btn-primary" type="button">
+                  <i class="fa fa-search me-1"></i> Qidirish
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Topics Table -->
+          <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Mavzu nomi</th>
+                  <th scope="col">Testlar soni</th>
+                  <th scope="col">Yaratilgan sana</th>
+                  <th scope="col">QR kod</th>
+                  <th scope="col" class="text-end">Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for mavzu in mavzular %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td><strong class="text-primary">{{ mavzu.mavzu }}</strong></td>
+                  <td><span class="badge bg-info">{{ mavzu.tests.count }}</span></td>
+                  <td>{{ mavzu.created_at|date:"d.m.Y" }}</td>
+                  <td>
+                    {% if mavzu.qrlink %}
+                      <a href="{{ mavzu.qrlink }}" download class="btn btn-sm btn-outline-secondary" title="QR kodni yuklab olish">
+                        <i class="fa fa-qrcode"></i> Yuklab olish
+                      </a>
+                    {% else %}
+                      <span class="badge bg-secondary">Yo'q</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group">
+                      <a href="{% url 'mavzu_detail' mavzu.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fa fa-eye me-1"></i> Ko'rish
+                      </a>
+                      <a href="{% url 'mavzu_edit' mavzu.id %}" class="btn btn-sm btn-outline-warning">
+                        <i class="fa fa-edit me-1"></i> Tahrirlash
+                      </a>
+                      <form action="{% url 'mavzu_delete' mavzu.id %}" method="post" class="d-inline" onsubmit="return confirm('{{ mavzu.mavzu }} mavzusini va unga tegishli barcha testlarni o\'chirishni xohlaysizmi?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center py-5">
+                    <div class="py-4">
+                      <i class="fa fa-book fa-3x mb-3 text-muted"></i>
+                      <h4 class="mb-3">Mavzular mavjud emas</h4>
+                      <p class="text-muted">Yangi mavzu yaratish uchun "Yangi mavzu" tugmasini bosing</p>
+                      <a href="{% url 'mavzu' %}" class="btn btn-primary mt-3">
+                        <i class="fa fa-plus me-2"></i>Yangi mavzu yaratish
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Delete Confirmation Modal has been replaced by simple JavaScript confirm() -->
+          <!-- QR Code Modal has been replaced by direct link to QR code page -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search functionality for table
+  document.getElementById('searchInput').addEventListener('keyup', function() {
+    const searchText = this.value.toLowerCase();
+    const tableRows = document.querySelectorAll('tbody tr');
+    
+    tableRows.forEach(row => {
+      const rowText = row.textContent.toLowerCase();
+      if (rowText.includes(searchText)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+<style>
+  .table th, .table td {
+    padding: 0.85rem;
+  }
+  .table tbody tr {
+    transition: background-color 0.15s;
+  }
+  .table tbody tr:hover {
+    background-color: rgba(0,0,0,0.03);
+  }
+  .btn-group .btn {
+    border-radius: 6px;
+    margin-right: 3px;
+  }
+</style>
+{% endblock %}

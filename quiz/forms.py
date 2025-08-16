@@ -21,7 +21,19 @@ class TestsForm(forms.ModelForm):
     class Meta:
         model = Tests
         fields = [
-            'mavzu_id',
+            'mavzu',
+            'savol',
+            'variant_a',
+            'variant_b',
+            'variant_c',
+            'variant_d',
+            'togri_javob',
+        ]
+        
+class TestFormNoMavzu(forms.ModelForm):
+    class Meta:
+        model = Tests
+        fields = [
             'savol',
             'variant_a',
             'variant_b',
@@ -34,7 +46,7 @@ class YechishForm(forms.ModelForm):
     class Meta:
         model = Tests
         fields = [
-            'mavzu_id',
+            'mavzu',
             'savol',
             'variant_a',
             'variant_b',
@@ -87,4 +99,4 @@ class TestAnswerForm(forms.Form):
 class NatijaForm(forms.ModelForm):
     class Meta:
         model = Natijas
-        fields = ['mavzu_id', 'fakultet_id', 'yonalish_id', 'kurs_id', 'guruh_id', 'talaba', 'togri', 'notogri']
+        fields = ['mavzu', 'fakultet', 'yonalish', 'kurs', 'guruh', 'talaba', 'togri', 'notogri']

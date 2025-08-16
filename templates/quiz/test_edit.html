@@ -1,0 +1,51 @@
+{% extends 'asosiy/base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-white p-4 border-0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h2 class="m-0 fw-bold">Test tahrirlash</h2>
+            <a href="{% url 'mavzu_detail' mavzu_id %}" class="btn btn-outline-primary">
+              <i class="fa fa-arrow-left me-2"></i>Orqaga
+            </a>
+          </div>
+        </div>
+        
+        <div class="card-body p-4">
+          <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <div class="alert alert-info">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-info-circle me-3 fa-lg"></i>
+                  <div>
+                    <strong>Savol:</strong> {{ test.savol }}<br>
+                    <strong>To'g'ri javob:</strong> {{ test.togri_javob }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {% bootstrap_form form %}
+            
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save me-2"></i>Saqlash
+              </button>
+              <a href="{% url 'mavzu_detail' mavzu_id %}" class="btn btn-secondary">
+                Bekor qilish
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

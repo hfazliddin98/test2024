@@ -1,0 +1,22 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center fw-bold">Yo‘nalishni o‘chirish</h2>
+          <form method="post">
+            {% csrf_token %}
+            <p class="fs-5">Rostdan ham <span class="fw-bold">{{ yonalish.name }}</span> yo‘nalishini o‘chirmoqchimisiz?</p>
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-danger px-4">O‘chirish</button>
+              <a href="{% url 'admin_yonalishlar' %}" class="btn btn-secondary">Bekor qilish</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

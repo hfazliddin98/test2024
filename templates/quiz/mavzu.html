@@ -5,31 +5,122 @@
 
 {% block content %}
   <div class="container-fluid">
-    <div class="row flex-nowrap">
-
-      {% include "asosiy/sidebar.html" %}
-
+    <div class="row">
       <!-- content -->
-      <div class="col">
-        
-        <div class="row mx-3 px-2">
-          <h1 class="text-center my-5">Mavzu qo`shish</h1>
+      <div class="col py-4">
+        <h2 class="fw-semibold mb-4">Yangi mavzu qo'shish</h2>
 
-          <div class="row py-2">
-            <form method="post">
-              {% csrf_token %}
-
-              {% bootstrap_form form %}
-
-              <button class="btn btn-outline-primary btn-sm text-center" type="submit">Saqlash</button>
-
-            </form>
-          </div>
-
+        <div class="card p-4 shadow-sm mb-4">
+          <form method="post" id="mavzu-form">
+            {% csrf_token %}
+            
+            <div class="mb-4">
+              <h5 class="mb-3">Mavzu ma'lumotlari</h5>
+              {% bootstrap_form mavzu_form %}
+            </div>
+            
+            <div class="mb-4">
+              <h5 class="mb-3">Testlar</h5>
+              <div id="test-forms">
+                <div class="test-form mb-3 border-bottom pb-3">
+                  <div class="test-number-label fw-bold mb-2">1-test</div>
+                  <div class="mb-3">
+                    <label class="form-label">Savol</label>
+                    <input type="text" name="savol_0" class="form-control" placeholder="Test savolini kiriting" required>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">To'g'ri javob (A)</label>
+                      <input type="text" name="variant_a_0" class="form-control" placeholder="To'g'ri javobni kiriting" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Variant B</label>
+                      <input type="text" name="variant_b_0" class="form-control" placeholder="Variant B ni kiriting" required>
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label">Variant C</label>
+                      <input type="text" name="variant_c_0" class="form-control" placeholder="Variant C ni kiriting" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label">Variant D</label>
+                      <input type="text" name="variant_d_0" class="form-control" placeholder="Variant D ni kiriting" required>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">To'g'ri javob</label>
+                    <select name="togri_javob_0" class="form-select" required>
+                      <option value="A" selected>A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <button type="button" class="btn btn-light btn-sm mb-3" id="add-test-form">
+                <i class="fa fa-plus me-1"></i> Yana test qo'shish
+              </button>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button class="btn btn-primary px-4" type="submit">
+                <i class="fa fa-save me-1"></i> Saqlash
+              </button>
+              <a href="{% url 'teacher_mavzular' %}" class="btn btn-outline-secondary">
+                <i class="fa fa-times me-1"></i> Bekor qilish
+              </a>
+            </div>
+          </form>
         </div>
       </div>
-
     </div>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const addBtn = document.getElementById('add-test-form');
+      const testForms = document.getElementById('test-forms');
+      let formIdx = 1;
+      
+      addBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const firstForm = testForms.querySelector('.test-form');
+        const newForm = firstForm.cloneNode(true);
+        
+        // Update form indices
+        newForm.querySelectorAll('input, select').forEach(el => {
+          if (el.name) {
+            el.name = el.name.replace(/_0/, '_' + formIdx);
+          }
+          if (el.type === 'text') {
+            el.value = '';
+          }
+        });
+        
+        // Update the test number label
+        let label = newForm.querySelector('.test-number-label');
+        label.textContent = (formIdx + 1) + '-test';
+        
+        // Add a remove button for all forms except the first one
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-sm btn-outline-danger remove-test-btn float-end';
+        removeBtn.innerHTML = '<i class="fa fa-trash me-1"></i> O\'chirish';
+        removeBtn.onclick = function() {
+          this.closest('.test-form').remove();
+          // Renumber all forms
+          document.querySelectorAll('#test-forms .test-form').forEach((form, idx) => {
+            form.querySelector('.test-number-label').textContent = (idx + 1) + '-test';
+          });
+        };
+        newForm.querySelector('.test-number-label').after(removeBtn);
+        
+        testForms.appendChild(newForm);
+        formIdx++;
+      });
+    });
+  </script>
 {% endblock %}

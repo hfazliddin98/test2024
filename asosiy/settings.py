@@ -1,3 +1,4 @@
+AUTH_USER_MODEL = 'users.Users'
 import os
 from pathlib import Path
 
@@ -142,6 +143,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DBBACKUP_STORAGE_OPTIONS = {'location': BASE_DIR / "backup"}
+
+AUTH_USER_MODEL = 'users.Users'
 
 # auto backup
 

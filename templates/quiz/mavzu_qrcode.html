@@ -1,0 +1,46 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-white p-4 border-0">
+          <div class="d-flex align-items-center justify-content-between">
+            <h2 class="m-0 fw-bold">{{ mavzu.mavzu }} - QR Kod</h2>
+            <a href="{% url 'teacher_mavzular' %}" class="btn btn-outline-primary">
+              <i class="fa fa-arrow-left me-2"></i>Orqaga
+            </a>
+          </div>
+        </div>
+        
+        <div class="card-body p-5 text-center">
+          {% if mavzu.qrlink %}
+            <div class="mb-4">
+              <img src="{{ mavzu.qrlink }}" alt="QR Code" class="img-fluid" style="max-width: 300px;">
+            </div>
+            <p class="mb-4">
+              Ushbu QR kodni skanerlab, talabalarga testni yechish imkoniyatini bering.
+              <br>
+              Test URL: <a href="{{ mavzu.qrlink }}" target="_blank" class="text-primary">{{ mavzu.qrlink }}</a>
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+              <a href="{{ mavzu.qrlink }}" download class="btn btn-primary">
+                <i class="fa fa-download me-2"></i>QR kodni yuklab olish
+              </a>
+              <a href="{% url 'test_bajarish' mavzu.id %}" target="_blank" class="btn btn-outline-primary">
+                <i class="fa fa-external-link-alt me-2"></i>Testni ko'rish
+              </a>
+            </div>
+          {% else %}
+            <div class="py-5">
+              <i class="fa fa-exclamation-circle fa-3x mb-3 text-warning"></i>
+              <h4 class="mb-3">QR kod mavjud emas</h4>
+              <p class="text-muted">Bu mavzu uchun QR kod hali yaratilmagan.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

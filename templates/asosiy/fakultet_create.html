@@ -1,0 +1,161 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-9">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-body p-4">
+          <h2 class="mb-4 text-center fw-bold">Yangi fakultet qo'shish</h2>
+          {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endif %}
+          <form method="post" autocomplete="off" id="fakultetForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Fakultet nomi</label>
+              <input type="text" name="name" class="form-control" placeholder="Fakultet nomi" required>
+            </div>
+            <hr>
+            <div id="yonalishlar-list">
+              <div class="yonalish-block border rounded p-3 mb-3 bg-light position-relative">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="badge bg-primary me-2">1-yo‘nalish</span>
+                  <button type="button" class="btn btn-outline-danger btn-sm ms-auto" onclick="removeYonalishField(this)" title="Yo‘nalishni o‘chirish"><i class="fa fa-trash"></i></button>
+                </div>
+                <div class="input-group mb-2">
+                  <input type="text" name="yonalishlar[]" class="form-control" placeholder="Yo‘nalish nomi (masalan: Matematika)" required>
+                </div>
+                <div class="kurslar-list">
+                  <label class="form-label mb-1">Kurslar:</label>
+                  <div class="kurs-block input-group mb-2">
+                    <input type="text" name="kurslar0[]" class="form-control" placeholder="Kurs nomi (masalan: 1-kurs)" required>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeKursField(this)" title="Kursni o‘chirish"><i class="fa fa-trash"></i></button>
+                  </div>
+                  <div class="guruhlar-list ms-4 mb-2">
+                    <label class="form-label mb-1">Guruhlar:</label>
+                    <div class="guruh-block input-group mb-1">
+                      <input type="text" name="guruhlar0_0[]" class="form-control" placeholder="Guruh nomi (masalan: 1-guruh)" required>
+                      <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGuruhField(this)" title="Guruhni o‘chirish"><i class="fa fa-trash"></i></button>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-xs btn-sm mb-2" onclick="addGuruhField(this)"><i class="fa fa-plus"></i> Guruh qo‘shish</button>
+                  </div>
+                  <button type="button" class="btn btn-outline-secondary btn-xs btn-sm mb-2" onclick="addKursField(this)"><i class="fa fa-plus"></i> Kurs qo‘shish</button>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="addYonalishField()"><i class="fa fa-plus"></i> Yo‘nalish qo‘shish</button>
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary px-4">Saqlash</button>
+              <a href="{% url 'admin_fakultetlar' %}" class="btn btn-secondary">Bekor qilish</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let yonalishIndex = 0;
+function addYonalishField() {
+  yonalishIndex++;
+  const list = document.getElementById('yonalishlar-list');
+  const div = document.createElement('div');
+  div.className = 'yonalish-block border rounded p-3 mb-3 bg-light position-relative';
+  div.innerHTML = `
+    <div class="d-flex align-items-center mb-2">
+      <span class="badge bg-primary me-2">${yonalishIndex+1}-yo‘nalish</span>
+      <button type="button" class="btn btn-outline-danger btn-sm ms-auto" onclick="removeYonalishField(this)" title="Yo‘nalishni o‘chirish"><i class="fa fa-trash"></i></button>
+    </div>
+    <div class="input-group mb-2">
+      <input type="text" name="yonalishlar[]" class="form-control" placeholder="Yo‘nalish nomi (masalan: Fizika)" required>
+    </div>
+    <div class="kurslar-list">
+      <label class="form-label mb-1">Kurslar:</label>
+      <div class="kurs-block input-group mb-2">
+        <input type="text" name="kurslar${yonalishIndex}[]" class="form-control" placeholder="Kurs nomi (masalan: 1-kurs)" required>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeKursField(this)" title="Kursni o‘chirish"><i class="fa fa-trash"></i></button>
+      </div>
+      <div class="guruhlar-list ms-4 mb-2">
+        <label class="form-label mb-1">Guruhlar:</label>
+        <div class="guruh-block input-group mb-1">
+          <input type="text" name="guruhlar${yonalishIndex}_0[]" class="form-control" placeholder="Guruh nomi (masalan: 1-guruh)" required>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGuruhField(this)" title="Guruhni o‘chirish"><i class="fa fa-trash"></i></button>
+        </div>
+        <button type="button" class="btn btn-outline-secondary btn-xs btn-sm mb-2" onclick="addGuruhField(this)"><i class="fa fa-plus"></i> Guruh qo‘shish</button>
+      </div>
+      <button type="button" class="btn btn-outline-secondary btn-xs btn-sm mb-2" onclick="addKursField(this)"><i class="fa fa-plus"></i> Kurs qo‘shish</button>
+    </div>
+  `;
+  list.appendChild(div);
+}
+function removeYonalishField(btn) {
+  btn.closest('.yonalish-block').remove();
+}
+function addKursField(yonalishBtn) {
+  const yonalishDiv = yonalishBtn.closest('.yonalish-block');
+  const kursList = yonalishDiv.querySelector('.kurslar-list');
+  // Find the yonalish index from the first kurs input name
+  let idx = 0;
+  const firstKurs = kursList.querySelector('input[name^="kurslar"]');
+  if (firstKurs) {
+    const match = firstKurs.name.match(/kurslar(\d+)\[\]/);
+    if (match) idx = match[1];
+  }
+  // Count how many kurs-blocks already exist
+  const kursBlocks = kursList.querySelectorAll('.kurs-block');
+  const kursIdx = kursBlocks.length;
+
+  // Hide all previous guruhlar-list
+  const allGuruhLists = kursList.querySelectorAll('.guruhlar-list');
+  allGuruhLists.forEach(function(guruhDiv) {
+    guruhDiv.style.display = 'none';
+  });
+
+  const div = document.createElement('div');
+  div.className = 'kurs-block input-group mb-2';
+  div.innerHTML = `<input type="text" name="kurslar${idx}[]" class="form-control" placeholder="Kurs nomi (masalan: ${kursIdx+1}-kurs)" required><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeKursField(this)" title="Kursni o‘chirish"><i class="fa fa-trash"></i></button>`;
+  kursList.insertBefore(div, kursList.querySelector('.guruhlar-list'));
+
+  // Add guruhlar-list for this kurs
+  const guruhDiv = document.createElement('div');
+  guruhDiv.className = 'guruhlar-list ms-4 mb-2';
+  guruhDiv.innerHTML = `
+    <label class="form-label mb-1">Guruhlar:</label>
+    <div class="guruh-block input-group mb-1">
+      <input type="text" name="guruhlar${idx}_${kursIdx}[]" class="form-control" placeholder="Guruh nomi (masalan: 1-guruh)" required>
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGuruhField(this)" title="Guruhni o‘chirish"><i class="fa fa-trash"></i></button>
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-xs btn-sm mb-2" onclick="addGuruhField(this)"><i class="fa fa-plus"></i> Guruh qo‘shish</button>
+  `;
+  kursList.insertBefore(guruhDiv, kursList.querySelector('.guruhlar-list'));
+  guruhDiv.style.display = '';
+}
+function removeKursField(btn) {
+  // Remove kurs and its guruhlar-list
+  const kursBlock = btn.closest('.kurs-block');
+  const kursList = kursBlock.parentNode;
+  // Remove the next sibling if it's a guruhlar-list
+  if (kursBlock.nextElementSibling && kursBlock.nextElementSibling.classList.contains('guruhlar-list')) {
+    kursBlock.nextElementSibling.remove();
+  }
+  kursBlock.remove();
+}
+function addGuruhField(guruhBtn) {
+  const guruhList = guruhBtn.closest('.guruhlar-list');
+  // Find the index for name
+  let idx = 0, kursIdx = 0;
+  const firstGuruh = guruhList.querySelector('input[name^="guruhlar"]');
+  if (firstGuruh) {
+    const match = firstGuruh.name.match(/guruhlar(\d+)_(\d+)\[\]/);
+    if (match) { idx = match[1]; kursIdx = match[2]; }
+  }
+  const div = document.createElement('div');
+  div.className = 'guruh-block input-group mb-1';
+  div.innerHTML = `<input type="text" name="guruhlar${idx}_${kursIdx}[]" class="form-control" placeholder="Guruh nomi (masalan: 2-guruh)" required><button type="button" class="btn btn-outline-danger btn-sm" onclick="removeGuruhField(this)" title="Guruhni o‘chirish"><i class="fa fa-trash"></i></button>`;
+  guruhList.insertBefore(div, guruhBtn);
+}
+function removeGuruhField(btn) {
+  btn.closest('.guruh-block').remove();
+}
+</script>
+{% endblock %}

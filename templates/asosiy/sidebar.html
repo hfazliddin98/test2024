@@ -1,59 +1,100 @@
-<div class="bg-body-tertiary text-black border-end border-5 col-auto col-md-4 col-lg-3 col-xl-2 min-vh-100 d-flex flex-column justify-content-between">
+<aside class="sidebar custom-admin-sidebar border-end shadow-sm p-0 min-vh-100 d-flex flex-column py-4 w-100">
+        <style>
+            .custom-admin-sidebar {
+                background: linear-gradient(135deg, #e3f0ff 0%, #f8fafc 100%);
+                box-shadow: 0 2px 16px 0 rgba(80,120,200,0.08);
+            }
+            .custom-admin-sidebar .nav-link {
+                border-radius: 1.2rem;
+                font-weight: 600;
+                transition: background 0.15s, color 0.15s;
+                color: #2d3a4b !important;
+                padding: 0.7rem 1.1rem;
+                font-size: 1.08rem;
+                display: flex;
+                align-items: center;
+                gap: 0.7rem;
+            }
+            .custom-admin-sidebar .nav-link:hover, .custom-admin-sidebar .nav-link.active {
+                background: linear-gradient(90deg, #4f8cff 0%, #3358ff 100%);
+                color: #fff !important;
+                box-shadow: 0 2px 8px 0 rgba(80,120,200,0.10);
+            }
+            .custom-admin-sidebar .icon-mavzu {
+                background: #e0f7fa;
+                color: #00bcd4;
+                border-radius: 50%;
+                padding: 0.45rem;
+                font-size: 1.2rem;
+                margin-right: 0.6rem;
+            }
+            .custom-admin-sidebar .icon-test {
+                background: #f3e5f5;
+                color: #8e24aa;
+                border-radius: 50%;
+                padding: 0.45rem;
+                font-size: 1.2rem;
+                margin-right: 0.6rem;
+            }
+            .custom-admin-sidebar .icon-natija {
+                background: #fff3e0;
+                color: #ff9800;
+                border-radius: 50%;
+                padding: 0.45rem;
+                font-size: 1.2rem;
+                margin-right: 0.6rem;
+            }
+            .custom-admin-sidebar .icon-admin {
+                background: #e8f5e9;
+                color: #43a047;
+                border-radius: 50%;
+                padding: 0.45rem;
+                font-size: 1.2rem;
+                margin-right: 0.6rem;
+            }
+        </style>
     {% if user.is_authenticated %}
-
-        {% if user.is_superuser or user.admin == True %}
-            <div class="bg-body-tertiary text-black px-0">
-
-                <ul class="nav flex-column ">
-                    <li class="nav-item py-2 py-sm-0">
-                        <a href="{% url 'mavzular' %}" class="nav-link text-dark">
-                            <i class="fa-solid fa-vial-virus"></i>
-                            <span class="fs-6 ms-3 d-none d-sm-inline">
-                                Mavzular
-                            </span>
+        {% if user.role == 'admin' or user.is_superuser %}
+            <nav>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a href="{% url 'admin_oqituvchilar' %}" class="nav-link text-dark d-flex align-items-center">
+                            <i class="fa-solid fa-user-tie icon-admin"></i>
+                            <span>O'qituvchilar</span>
                         </a>
                     </li>
-                    <li class="nav-item py-2 py-sm-0">
-                        <a href="{% url 'testlar' %}" class="nav-link text-dark">
-                            <i class="fa-solid fa-envelope-open-text"></i>
-                            <span class="fs-6 ms-3 d-none d-sm-inline">
-                                Testlar
-                            </span>
+                    <li class="nav-item">
+                        <a href="{% url 'admin_fakultetlar' %}" class="nav-link text-dark d-flex align-items-center">
+                            <i class="fa-solid fa-building-columns icon-admin"></i>
+                            <span>Fakultetlar</span>
                         </a>
                     </li>
-                    <li class="nav-item py-2 py-sm-0">
-                        <a href="{% url 'natijalar' %}" class="nav-link text-dark">
-                            <i class="fa-solid fa-square-poll-vertical"></i>
-                            <span class="fs-6 ms-3 d-none d-sm-inline">
-                                Natijalar
-                            </span>
+                    <li class="nav-item">
+                        <a href="{% url 'admin_natijalar' %}" class="nav-link text-dark d-flex align-items-center">
+                            <i class="fa-solid fa-chart-column icon-natija"></i>
+                            <span>Natijalar</span>
                         </a>
                     </li>
                 </ul>
-
-            </div>                    
+            </nav>
         {% endif %}
-        
-        {% if user.fakultet_admin == True %}
-            <div class="bg-body-tertiary text-black px-0 mt-3">                
-
-                <ul class="nav flex-column ">
-
-                    <li class="nav-item py-2 py-sm-0">
-                        <a href="" class="nav-link text-dark">
-                            <i class="fa-solid fa-user-tie"></i>
-                            <span class="fs-6 ms-3 d-none d-sm-inline">
-                                Natijalar
-                            </span>
+        {% if user.role == 'oqituvchi' %}
+            <nav class="mt-4">
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a href="{% url 'teacher_mavzular' %}" class="nav-link text-dark d-flex align-items-center {% if request.path == '/teacher/mavzular/' %}active{% endif %}">
+                            <i class="fa-solid fa-book icon-mavzu"></i>
+                            <span>Mavzular</span>
                         </a>
                     </li>
-                    
+                    <li class="nav-item">
+                        <a href="{% url 'teacher_natijalar' %}" class="nav-link text-dark d-flex align-items-center {% if request.path == '/teacher/natijalar/' %}active{% endif %}">
+                            <i class="fa-solid fa-chart-column icon-natija"></i>
+                            <span>Natijalar</span>
+                        </a>
+                    </li>
                 </ul>
-
-            </div>
+            </nav>
         {% endif %}
-
-        
-    {% endif%}
-
-</div>
+    {% endif %}
+</aside>

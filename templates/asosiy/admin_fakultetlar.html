@@ -1,0 +1,50 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <h2 class="mb-4 text-center fw-bold">Fakultetlar</h2>
+      <a href="{% url 'fakultet_create' %}" class="btn btn-primary mb-4 rounded-3">+ Yangi fakultet qo'shish</a>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle bg-white">
+          <thead class="table-light">
+            <tr>
+              <th style="width:40px;">#</th>
+              <th>Fakultet nomi</th>
+              <th style="width:180px;">Amallar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fakultet in fakultetlar %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="fw-semibold">{{ fakultet.name }}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <a href="{% url 'yonalish_create' %}?fakultet={{ fakultet.pk }}" class="btn btn-sm btn-light border" title="Yo‘nalish qo‘shish">
+                    <i class="fa fa-plus text-success"></i>
+                  </a>
+                  <a href="{% url 'fakultet_update' fakultet.pk %}" class="btn btn-sm btn-light border" title="Tahrirlash">
+                    <i class="fa fa-edit text-warning"></i>
+                  </a>
+                  <form action="{% url 'fakultet_delete' fakultet.pk %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-light border" title="O‘chirish" onclick="return confirm('Rostdan ham o‘chirmoqchimisiz?')">
+                      <i class="fa fa-trash text-danger"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center text-muted">Fakultetlar mavjud emas.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

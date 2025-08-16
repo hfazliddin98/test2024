@@ -1,0 +1,189 @@
+{% extends "asosiy/base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row flex-nowrap">
+    <div class="col py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-semibold mb-0">Mavzu: {{ mavzu.mavzu }}</h2>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#newTestForm" aria-expanded="false">
+            <i class="fa-solid fa-plus me-1"></i> Yangi test qo'shish
+          </button>
+          <a href="{% url 'teacher_mavzular' %}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i> Mavzular ro'yxatiga
+          </a>
+        </div>
+      </div>
+      
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between">
+          <h5 class="mb-0">Testlar ro'yxati</h5>
+          <span class="badge bg-primary">{{ tests.count }} ta test</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Savol</th>
+                  <th>Variantlar</th>
+                  <th>To'g'ri javob</th>
+                  <th>Amallar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for test in tests %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ test.savol }}</td>
+                    <td>
+                      <div><strong>A:</strong> {{ test.variant_a }}</div>
+                      <div><strong>B:</strong> {{ test.variant_b }}</div>
+                      <div><strong>C:</strong> {{ test.variant_c }}</div>
+                      <div><strong>D:</strong> {{ test.variant_d }}</div>
+                    </td>
+                    <td><span class="badge bg-success">{{ test.togri_javob }}</span></td>
+                    <td>
+                      <div class="d-flex gap-2">
+                        <a href="{% url 'test_edit' test.id %}" class="btn btn-sm btn-outline-warning">
+                          <i class="fa fa-edit"></i> Tahrirlash
+                        </a>
+                        <form action="{% url 'test_delete' test.id %}" method="post" onsubmit="return confirm('Ushbu testni o\'chirishni xohlaysizmi?');">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fa fa-trash"></i> O'chirish
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center py-5">
+                      <div class="py-4">
+                        <i class="fa fa-clipboard-question fa-3x mb-3 text-muted"></i>
+                        <h4 class="mb-3">Testlar mavjud emas</h4>
+                        <p class="text-muted mb-4">Bu mavzuga hali testlar qo'shilmagan</p>
+                        <button class="btn btn-primary show-test-form-btn">
+                          <i class="fa fa-plus me-2"></i>Test qo'shish
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Add Test Form (Collapsible) -->
+      <div class="collapse mb-4" id="newTestForm">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Yangi test qo'shish</h5>
+          </div>
+          <div class="card-body">
+            <form method="post" id="multi-test-form">
+              {% csrf_token %}
+              <div id="test-forms">
+                <div class="test-form mb-4 border-bottom pb-3">
+                  {% bootstrap_form form %}
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-3">
+                <button type="button" class="btn btn-light" id="add-test-form">
+                  <i class="fa-solid fa-plus me-1"></i> Yana test qo'shish
+                </button>
+                <button class="btn btn-primary px-4" type="submit">
+                  <i class="fa-solid fa-save me-1"></i> Testlarni saqlash
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#newTestForm">
+                  Bekor qilish
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Test add form functionality
+          const addBtn = document.getElementById('add-test-form');
+          const testForms = document.getElementById('test-forms');
+          let formIdx = 1;
+          
+          // Show test form when "Add Test" button is clicked from empty state
+          const showFormButtons = document.querySelectorAll('.show-test-form-btn');
+          if (showFormButtons.length) {
+            showFormButtons.forEach(btn => {
+              btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const testFormCollapse = new bootstrap.Collapse(document.getElementById('newTestForm'));
+                testFormCollapse.show();
+              });
+            });
+          }
+          
+          // Handle adding multiple test forms
+          if (addBtn && testForms) {
+            addBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              const firstForm = testForms.querySelector('.test-form');
+              const newForm = firstForm.cloneNode(true);
+              
+              // Tozalash
+              newForm.querySelectorAll('input,select,textarea').forEach(el => {
+                if (el.type === 'text' || el.tagName === 'TEXTAREA') el.value = '';
+                if (el.tagName === 'SELECT') el.selectedIndex = 0;
+              });
+              
+              // Sarlavha raqami
+              let label = newForm.querySelector('.test-number-label');
+              if (!label) {
+                label = document.createElement('div');
+                label.className = 'test-number-label fw-bold mb-2';
+                newForm.prepend(label);
+              }
+              label.textContent = (formIdx+1) + '-test';
+              
+              // Add a remove button
+              const removeBtn = document.createElement('button');
+              removeBtn.type = 'button';
+              removeBtn.className = 'btn btn-sm btn-outline-danger remove-test-btn float-end';
+              removeBtn.innerHTML = '<i class="fa-solid fa-trash me-1"></i> O\'chirish';
+              removeBtn.onclick = function() {
+                this.closest('.test-form').remove();
+                // Renumber all forms
+                document.querySelectorAll('#test-forms .test-form').forEach((form, idx) => {
+                  form.querySelector('.test-number-label').textContent = (idx + 1) + '-test';
+                });
+              };
+              label.after(removeBtn);
+              
+              testForms.appendChild(newForm);
+              formIdx++;
+            });
+            
+            // Birinchi formga sarlavha
+            let firstLabel = document.createElement('div');
+            firstLabel.className = 'test-number-label fw-bold mb-2';
+            firstLabel.textContent = '1-test';
+            testForms.querySelector('.test-form').prepend(firstLabel);
+          }
+          
+          // Auto-expand form if there's a validation error
+          if (document.querySelector('.alert-danger')) {
+            const testFormCollapse = new bootstrap.Collapse(document.getElementById('newTestForm'));
+            testFormCollapse.show();
+          }
+        });
+      </script>
+    </div>
+  </div>
+</div>
+{% endblock %}

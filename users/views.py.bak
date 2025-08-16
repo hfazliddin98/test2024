@@ -1,18 +1,21 @@
 # ===== IMPORTS =====
+from users.forms import OqituvchiForm, FakultetForm, YonalishForm, KursForm, GuruhForm
+# ===== IMPORTS =====
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
-from django.contrib.auth import logout
-from users.models import Users, Yonalishs, Kurs, Guruhs, Fakultets
-from users.forms import OqituvchiForm, FakultetForm, YonalishForm, KursForm, GuruhForm
-
-
-@login_required
+from dj@login_required
 def admin_natijalar(request):
     from .views_natijalar import admin_natijalar as natijalar_view
-    return natijalar_view(request)
+    return natijalar_view(request)shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
+from users.models import Users, Yonalishs, Kurs, Guruhs, Fakultets
+from users.forms import OqituvchiForm
+
+
+
+
+
 
 
 from django.db import transaction
@@ -376,13 +379,6 @@ def get_yonalishlar(request):
     fakultet_id = request.GET.get('fakultet_id')
     yonalishlar = list(Yonalishs.objects.filter(fakultet=fakultet_id).values('id', 'name'))
     return JsonResponse({'yonalishlar': yonalishlar})
-
-def chiqish_user(request):
-    """
-    Foydalanuvchini tizimdan chiqaradi
-    """
-    logout(request)
-    return redirect('kirish')  # Kirish sahifasiga yo'naltirish
 
 
 

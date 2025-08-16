@@ -1,0 +1,215 @@
+{% extends 'asosiy/base.html' %}
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card shadow rounded-4 border-0">
+        <div class="card-header bg-white p-4 border-0">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <h2 class="m-0 fw-bold">Testlar</h2>
+            <div>
+              <a href="{% url 'test' %}" class="btn btn-primary">
+                <i class="fa fa-plus me-2"></i>Yangi test
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-body p-4">
+          <!-- Filters and Search -->
+          <div class="row mb-4 align-items-center">
+            <div class="col-md-4 mb-3 mb-md-0">
+              <select class="form-select" id="mavzuFilter">
+                <option value="">Barcha mavzular</option>
+                {% for mavzu in mavzular %}
+                <option value="{{ mavzu.id }}">{{ mavzu.mavzu }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-8">
+              <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Test savoli bo'yicha qidirish...">
+                <button class="btn btn-primary" type="button">
+                  <i class="fa fa-search me-1"></i> Qidirish
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tests Table -->
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 50px;">#</th>
+                  <th scope="col">Savol</th>
+                  <th scope="col">Mavzu</th>
+                  <th scope="col" style="width: 120px;">Yaratilgan sana</th>
+                  <th scope="col" style="width: 180px;">Amallar</th>
+                </tr>
+              </thead>
+              <tbody id="testsTableBody">
+                {% for test in testlar %}
+                <tr data-mavzu="{{ test.mavzu.id }}">
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ test.savol }}</td>
+                  <td>{{ test.mavzu.mavzu }}</td>
+                  <td>{{ test.created_at|date:"d.m.Y" }}</td>
+                  <td>
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewModal{{ test.id }}">
+                        <i class="fa fa-eye"></i>
+                      </button>
+                      <a href="#" class="btn btn-sm btn-outline-warning">
+                        <i class="fa fa-edit"></i>
+                      </a>
+                      <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ test.id }}">
+                        <i class="fa fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- View Test Modal -->
+                <div class="modal fade" id="viewModal{{ test.id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content border-0">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Test ma'lumotlari</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-4">
+                          <h6 class="text-muted mb-2">Savol:</h6>
+                          <p class="lead">{{ test.savol }}</p>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light">
+                              <div class="card-body py-2">
+                                <h6 class="card-title mb-1"><span class="badge bg-success me-2">A</span>To'g'ri javob:</h6>
+                                <p class="card-text">{{ test.variant_a }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light">
+                              <div class="card-body py-2">
+                                <h6 class="card-title mb-1"><span class="badge bg-secondary me-2">B</span>Variant:</h6>
+                                <p class="card-text">{{ test.variant_b }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light">
+                              <div class="card-body py-2">
+                                <h6 class="card-title mb-1"><span class="badge bg-secondary me-2">C</span>Variant:</h6>
+                                <p class="card-text">{{ test.variant_c }}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6 mb-3">
+                            <div class="card border-0 bg-light">
+                              <div class="card-body py-2">
+                                <h6 class="card-title mb-1"><span class="badge bg-secondary me-2">D</span>Variant:</h6>
+                                <p class="card-text">{{ test.variant_d }}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                          <div>
+                            <small class="text-muted">Mavzu: {{ test.mavzu.mavzu }}</small>
+                          </div>
+                          <div>
+                            <small class="text-muted">Yaratilgan: {{ test.created_at|date:"d.m.Y H:i" }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Yopish</button>
+                        <a href="#" class="btn btn-warning">
+                          <i class="fa fa-edit me-1"></i> Tahrirlash
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div class="modal fade" id="deleteModal{{ test.id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0">
+                      <div class="modal-header">
+                        <h5 class="modal-title text-danger">Testni o'chirish</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <p>Ushbu testni o'chirishni xohlaysizmi?</p>
+                        <p class="fw-bold">"{{ test.savol|truncatewords:10 }}"</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                        <form action="#" method="post" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger">O'chirish</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-5">
+                    <div class="py-4">
+                      <i class="fa fa-file-alt fa-3x mb-3 text-muted"></i>
+                      <h4 class="mb-3">Testlar mavjud emas</h4>
+                      <p class="text-muted">Yangi test yaratish uchun "Yangi test" tugmasini bosing</p>
+                      <a href="{% url 'test' %}" class="btn btn-primary mt-3">
+                        <i class="fa fa-plus me-2"></i>Yangi test yaratish
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Search and filter functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const mavzuFilter = document.getElementById('mavzuFilter');
+    const tableBody = document.getElementById('testsTableBody');
+    const rows = tableBody.querySelectorAll('tr');
+    
+    function filterTable() {
+      const searchText = searchInput.value.toLowerCase();
+      const selectedMavzu = mavzuFilter.value;
+      
+      rows.forEach(row => {
+        const rowText = row.textContent.toLowerCase();
+        const rowMavzu = row.getAttribute('data-mavzu');
+        
+        const matchesSearch = rowText.includes(searchText);
+        const matchesMavzu = !selectedMavzu || rowMavzu === selectedMavzu;
+        
+        if (matchesSearch && matchesMavzu) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    
+    searchInput.addEventListener('keyup', filterTable);
+    mavzuFilter.addEventListener('change', filterTable);
+  });
+</script>
+{% endblock %}
