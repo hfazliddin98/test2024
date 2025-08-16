@@ -1,3 +1,27 @@
+
+# ===== IMPORTS =====
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
+from django.contrib.auth import logout
+from django.db import transaction
+from django.core.paginator import Paginator
+from django.db.models import Count, Avg, Max, F, ExpressionWrapper, DecimalField, Case, When, Value
+from django.db.models.functions import Round
+from users.models import Users, Yonalishs, Kurs, Guruhs, Fakultets
+from users.forms import OqituvchiForm, FakultetForm, YonalishForm, KursForm, GuruhForm
+from quiz.models import Natijas, Mavzus
+
+import openpyxl
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
+
+
+
 @csrf_exempt
 def get_kurslar(request):
     yonalish_id = request.GET.get('yonalish_id')
@@ -9,9 +33,7 @@ def get_guruhlar(request):
     kurs_id = request.GET.get('kurs_id')
     guruhlar = list(Guruhs.objects.filter(kurs=kurs_id).values('id', 'name'))
     return JsonResponse({'guruhlar': guruhlar})
-import openpyxl
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+
 # ===== ADMIN NATIJALAR EXPORT =====
 @login_required
 def export_natijalar_excel(request):
@@ -43,20 +65,6 @@ def export_natijalar_excel(request):
     response['Content-Disposition'] = 'attachment; filename=natijalar.xlsx'
     wb.save(response)
     return response
-# ===== IMPORTS =====
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404, redirect, render
-from django.http import JsonResponse
-from django.contrib.auth import logout
-from django.db import transaction
-from django.core.paginator import Paginator
-from django.db.models import Count, Avg, Max, F, ExpressionWrapper, DecimalField, Case, When, Value
-from django.db.models.functions import Round
-from users.models import Users, Yonalishs, Kurs, Guruhs, Fakultets
-from users.forms import OqituvchiForm, FakultetForm, YonalishForm, KursForm, GuruhForm
-from quiz.models import Natijas, Mavzus
 
 
 # ===== ADMIN NATIJALAR =====
