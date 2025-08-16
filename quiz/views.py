@@ -372,8 +372,10 @@ def test_bajarish(request, pk):
                 jami=len(tests)
             )
             return render(request, 'quiz/test_result.html', {
-                'score': score,
-                'total': len(tests)
+                'score': round(score * 100 / len(tests)) if len(tests) > 0 else 0,
+                'total': len(tests),
+                'correct_answers': score,
+                'incorrect_answers': incorrect_answers
             })
     else:
         form = TestAnswerForm(tests=shuffled_tests)

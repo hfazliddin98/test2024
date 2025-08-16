@@ -1,3 +1,37 @@
+import openpyxl
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+# ===== ADMIN NATIJALAR EXPORT =====
+@login_required
+def export_natijalar_excel(request):
+    natijalar = Natijas.objects.select_related(
+        'fakultet', 'yonalish', 'kurs', 'guruh', 'mavzu'
+    ).order_by('-created_at')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Natijalar'
+    # Sarlavhalar
+    ws.append([
+        'Talaba', 'Fakultet', 'Yo\'nalish', 'Kurs', 'Guruh', 'Mavzu', 'To\'g\'ri', 'Noto\'g\'ri', 'Jami', 'Sana'
+    ])
+    for n in natijalar:
+        ws.append([
+            str(n.talaba),
+            n.fakultet.name if n.fakultet else '',
+            n.yonalish.name if n.yonalish else '',
+            n.kurs.name if n.kurs else '',
+            n.guruh.name if n.guruh else '',
+            n.mavzu.mavzu if n.mavzu else '',
+            n.togri,
+            n.notogri,
+            n.jami,
+            n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else ''
+        ])
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=natijalar.xlsx'
+    wb.save(response)
+    return response
 # ===== IMPORTS =====
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -17,123 +51,24 @@ from quiz.models import Natijas, Mavzus
 # ===== ADMIN NATIJALAR =====
 @login_required
 def admin_natijalar(request):
-    # Get filters
-    fakultet_id = request.GET.get('fakultet')
-    yonalish_id = request.GET.get('yonalish')
-    
-    # Base query
-    natijalar_query = Natijas.objects.select_related(
+    natijalar = Natijas.objects.select_related(
         'fakultet', 'yonalish', 'kurs', 'guruh', 'mavzu'
-    )
-    
-    # Apply filters
-    if fakultet_id and fakultet_id.strip():  # Make sure it's not empty
-        natijalar_query = natijalar_query.filter(fakultet_id=fakultet_id)
-        
-        if yonalish_id:
-            natijalar_query = natijalar_query.filter(yonalish_id=yonalish_id)
-    
-    # Pagination
-    paginator = Paginator(natijalar_query.order_by('-created_at'), 20)
-    page = request.GET.get('page', 1)
-    natijalar = paginator.get_page(page)
-    
-    # Get all fakultets for filtering
-    fakultetlar = Fakultets.objects.all()
-    
-    # Get yonalishlar for the selected fakultet
-    yonalishlar = []
-    selected_fakultet = None
-    if fakultet_id and fakultet_id.strip():
-        try:
-            selected_fakultet = Fakultets.objects.get(pk=fakultet_id)
-            yonalishlar = Yonalishs.objects.filter(fakultet_id=fakultet_id)
-        except Fakultets.DoesNotExist:
-            selected_fakultet = None
-    
-    # Count statistics - filtered results count and total count
-    filtered_natijalar_count = natijalar_query.count()
-    natijalar_count = filtered_natijalar_count  # Use filtered count for display
-    
-    # Calculate statistics similar to teacher view
-    talabalar_count = natijalar_query.values('talaba').distinct().count() if natijalar_count > 0 else 0
-    
-    # Calculate averages and other statistics
-    ortacha_ball = 0
-    eng_yuqori_ball = 0
-    eng_yuqori_talaba = "Yo'q"
+    ).order_by('-created_at')
+
+    natijalar_count = natijalar.count()
+    talabalar_count = natijalar.values('talaba').distinct().count() if natijalar_count > 0 else 0
     fakultetlar_count = Fakultets.objects.count()
     yonalishlar_count = Yonalishs.objects.count()
-    
-    if natijalar_count > 0:
-        # Calculate average percentage
-        avg_data = natijalar_query.aggregate(
-            avg_togri=Avg('togri'),
-            avg_jami=Avg('jami')
-        )
-        if avg_data['avg_jami'] and avg_data['avg_jami'] > 0:
-            ortacha_ball = round((avg_data['avg_togri'] / avg_data['avg_jami']) * 100)
-        
-        # Find highest score
-        top_result = natijalar_query.annotate(
-            percentage=ExpressionWrapper(
-                F('togri') * 100.0 / F('jami'),
-                output_field=DecimalField(max_digits=5, decimal_places=2)
-            )
-        ).order_by('-percentage').first()
-        
-        if top_result:
-            eng_yuqori_ball = round(float(top_result.percentage))
-            eng_yuqori_talaba = top_result.talaba
-    
-    # Get all topics for reference
-    all_mavzular = Mavzus.objects.all()
-    
-    # Get unique students and their aggregated results for detailed table
-    student_summary = {}
-    for natija in natijalar_query:
-        student_key = f"{natija.talaba}_{natija.kurs.id}_{natija.guruh.id}"
-        if student_key not in student_summary:
-            student_summary[student_key] = {
-                'talaba': natija.talaba,
-                'fakultet': natija.fakultet,
-                'yonalish': natija.yonalish,
-                'kurs': natija.kurs,
-                'guruh': natija.guruh,
-                'mavzular': {}
-            }
-        
-        # Add topic results for this student
-        if natija.mavzu.id not in student_summary[student_key]['mavzular']:
-            student_summary[student_key]['mavzular'][natija.mavzu.id] = {
-                'mavzu': natija.mavzu,
-                'togri': natija.togri,
-                'notogri': natija.notogri,
-                'jami': natija.jami,
-                'foiz': round((natija.togri / natija.jami * 100) if natija.jami > 0 else 0),
-                'sana': natija.created_at
-            }
-    
-    # Transform to list for template
-    student_results = list(student_summary.values())
-    
-    # Return only the necessary data for our simplified view
-    return render(request, 'asosiy/admin_natijalar.html', {
+
+
+    context = {
         'natijalar': natijalar,
-        'fakultetlar': fakultetlar,
-        'yonalishlar': yonalishlar,
-        'selected_fakultet': selected_fakultet,
         'natijalar_count': natijalar_count,
         'talabalar_count': talabalar_count,
-        'ortacha_ball': ortacha_ball,
-        'eng_yuqori_ball': eng_yuqori_ball,
-        'eng_yuqori_talaba': eng_yuqori_talaba,
         'fakultetlar_count': fakultetlar_count,
         'yonalishlar_count': yonalishlar_count,
-        'all_mavzular': all_mavzular,
-        'student_results': student_results
-    })
-
+    }
+    return render(request, 'asosiy/admin_natijalar.html', context)
 
 # ===== FAKULTET CRUD =====
 @login_required

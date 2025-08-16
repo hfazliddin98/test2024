@@ -8,316 +8,112 @@
         <div class="card-header bg-white p-4 border-0">
           <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <h2 class="m-0 fw-bold">Natijalar</h2>
-          </div>
-          
-          <!-- Filter Section -->
-          <div class="card mt-3 mb-3 border-0 shadow-sm">
-            <div class="card-body">
-              <form action="{% url 'admin_natijalar' %}" method="get" class="d-flex align-items-center">
-                <div class="me-2">
-                  <label for="fakultet" class="form-label mb-0 me-2">Fakultet:</label>
-                </div>
-                <div class="flex-grow-1">
-                  <select class="form-select" id="fakultet" name="fakultet">
-                    <option value="">Barcha fakultetlar</option>
-                    {% for fakultet in fakultetlar %}
-                      <option value="{{ fakultet.id }}" {% if request.GET.fakultet == fakultet.id|stringformat:"s" or request.GET.fakultet == fakultet.id %}selected{% endif %}>
-                        {{ fakultet.name }}
-                      </option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <div class="ms-3">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-filter me-1"></i>Filter
-                  </button>
-                </div>
-                {% if selected_fakultet %}
-                <div class="ms-3">
-                  <a href="{% url 'admin_natijalar' %}" class="btn btn-outline-secondary">
-                    <i class="fa fa-times me-1"></i>Tozalash
-                  </a>
-                </div>
-                {% endif %}
-              </form>
-            </div>
+            <a href="{% url 'export_natijalar_excel' %}" class="btn btn-success">
+              <i class="fa fa-file-excel me-2"></i>Excel
+            </a>
           </div>
         </div>
         <div class="card-body p-4">
-          <!-- Search bar -->
+          <!-- Statistics Cards -->
           <div class="row mb-4">
-            <div class="col">
-              <div class="input-group">
-                <input type="text" id="searchInput" class="form-control" placeholder="Talaba nomi, guruh, yo'nalish bo'yicha qidirish...">
-                <button class="btn btn-primary" type="button">
-                  <i class="fa fa-search me-1"></i> Qidirish
-                </button>
+            <div class="col-md-6 mb-3">
+              <div class="card border-0 bg-primary bg-gradient text-white">
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                      <h5 class="card-title mb-0">Jami Natijalar</h5>
+                      <h2 class="fw-bold mb-0">{{ natijalar_count|default:"0" }}</h2>
+                    </div>
+                    <div class="ms-3">
+                      <i class="fa fa-clipboard-list fa-2x opacity-75"></i>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small><i class="fa fa-users me-1"></i>{{ talabalar_count|default:"0" }} talaba</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <div class="card border-0 bg-warning bg-gradient text-white">
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                      <h5 class="card-title mb-0">Fakultetlar</h5>
+                      <h2 class="fw-bold mb-0">{{ fakultetlar_count|default:"0" }}</h2>
+                    </div>
+                    <div class="ms-3">
+                      <i class="fa fa-university fa-2x opacity-75"></i>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small><i class="fa fa-graduation-cap me-1"></i>{{ yonalishlar_count|default:"0" }} yo'nalish</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
           
           <!-- Results Table -->
-          <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+          <div class="d-flex justify-content-start align-items-center mb-3 mt-3">
             <div class="text-muted">
               <i class="fa fa-info-circle me-1"></i>
               {% if natijalar_count > 0 %}
                 Jami <strong>{{ natijalar_count }}</strong> ta natija mavjud
-                {% if selected_fakultet %}
-                  <span class="badge bg-primary ms-2">{{ selected_fakultet.name }}</span> fakulteti
-                {% endif %}
               {% else %}
                 <span>Hozirda natijalar mavjud emas</span>
               {% endif %}
-              <!-- Debug info: {{ debug_info }} -->
-            </div>
-            {% if natijalar.has_other_pages %}
-            <div class="text-muted">
-              Sahifa: <strong>{{ natijalar.number }}/{{ natijalar.paginator.num_pages }}</strong>
-            </div>
-            {% endif %}
-          </div>
-          
-          <!-- Nav tabs for different views -->
-          <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="standard-tab" data-bs-toggle="tab" data-bs-target="#standard-view" type="button" role="tab" aria-controls="standard-view" aria-selected="true">
-                <i class="fa fa-list me-2"></i>Standart ko'rinish
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="student-tab" data-bs-toggle="tab" data-bs-target="#student-view" type="button" role="tab" aria-controls="student-view" aria-selected="false">
-                <i class="fa fa-user-graduate me-2"></i>Talaba bo'yicha
-              </button>
-            </li>
-          </ul>
-          
-          <div class="tab-content">
-            <!-- Standard Results Table -->
-            <div class="tab-pane fade show active" id="standard-view" role="tabpanel" aria-labelledby="standard-tab">
-              <div class="table-responsive">
-                <table class="table table-hover table-bordered table-striped">
-                  <thead class="table-light">
-                    <tr>
-                      <th scope="col" class="text-center" style="width: 40px;">#</th>
-                      <th scope="col" style="min-width: 140px;">Talaba</th>
-                      {% if not selected_fakultet %}
-                      <th scope="col" style="min-width: 140px;">Fakultet</th>
-                      {% endif %}
-                      <th scope="col" style="min-width: 150px;">Yo'nalish</th>
-                      <th scope="col" style="min-width: 80px;">Kurs</th>
-                      <th scope="col" style="min-width: 80px;">Guruh</th>
-                      <th scope="col" style="min-width: 180px;">Mavzu</th>
-                      <th scope="col" class="text-success text-center" style="width: 70px;">To'g'ri</th>
-                      <th scope="col" class="text-danger text-center" style="width: 70px;">Noto'g'ri</th>
-                      <th scope="col" class="text-primary text-center" style="width: 60px;">Jami</th>
-                      <th scope="col" class="text-center" style="width: 80px;">Natija</th>
-                      <th scope="col" style="min-width: 100px;">Sana</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for natija in natijalar %}
-                    <tr>
-                      <td class="text-center">{{ forloop.counter }}</td>
-                      <td class="fw-medium">{{ natija.talaba }}</td>
-                      {% if not selected_fakultet %}
-                      <td>{{ natija.fakultet.name }}</td>
-                      {% endif %}
-                      <td>{{ natija.yonalish.name }}</td>
-                      <td>{{ natija.kurs.name }}</td>
-                      <td>{{ natija.guruh.name }}</td>
-                      <td>{{ natija.mavzu.mavzu }}</td>
-                      <td class="text-success text-center fw-bold">{{ natija.togri }}</td>
-                      <td class="text-danger text-center fw-bold">{{ natija.notogri }}</td>
-                      <td class="text-primary text-center fw-bold">{{ natija.jami }}</td>
-                      <td class="text-center">
-                        {% if natija.jami > 0 %}
-                          {% with score=natija.togri total=natija.jami %}
-                            {% with percentage=score|floatformat:0|add:0 %}
-                              {% widthratio percentage total 100 as percent %}
-                              {% if percent >= 70 %}
-                                <span class="badge bg-success fw-normal">{% widthratio score total 100 %}%</span>
-                              {% elif percent >= 50 %}
-                                <span class="badge bg-warning text-dark fw-normal">{% widthratio score total 100 %}%</span>
-                              {% else %}
-                                <span class="badge bg-danger fw-normal">{% widthratio score total 100 %}%</span>
-                              {% endif %}
-                            {% endwith %}
-                          {% endwith %}
-                        {% else %}
-                          <span class="badge bg-secondary fw-normal">0%</span>
-                        {% endif %}
-                      </td>
-                      <td class="text-nowrap">{{ natija.created_at|date:"d.m.Y H:i" }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                      <td colspan="{% if selected_fakultet %}11{% else %}12{% endif %}" class="text-center py-5">
-                        <div class="text-muted">
-                          <i class="fa fa-info-circle me-2 fa-2x"></i>
-                          <h5 class="mt-3">Natijalar topilmadi</h5>
-                          {% if selected_fakultet %}
-                          <p>"{{ selected_fakultet.name }}" fakulteti bo'yicha natijalar mavjud emas</p>
-                          {% else %}
-                          <p>Hozirda tizimda natijalar mavjud emas</p>
-                          {% endif %}
-                        </div>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <!-- Student-based Results Table -->
-            <div class="tab-pane fade" id="student-view" role="tabpanel" aria-labelledby="student-tab">
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                  <thead class="table-light">
-                    <tr>
-                      <th rowspan="2" class="align-middle text-center" style="width: 40px;">#</th>
-                      <th rowspan="2" class="align-middle" style="min-width: 140px;">Talaba</th>
-                      <th rowspan="2" class="align-middle" style="min-width: 140px;">Guruh</th>
-                      <th colspan="{{ all_mavzular|length }}" class="text-center">Mavzular</th>
-                    </tr>
-                    <tr>
-                      {% for mavzu in all_mavzular %}
-                        <th class="text-center" style="min-width: 100px;">{{ mavzu.mavzu }}</th>
-                      {% endfor %}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for student in student_results %}
-                    <tr>
-                      <td class="text-center">{{ forloop.counter }}</td>
-                      <td class="fw-medium">{{ student.talaba }}</td>
-                      <td>{{ student.kurs.name }}-{{ student.guruh.name }}</td>
-                      {% for mavzu in all_mavzular %}
-                        <td class="text-center">
-                          {% if mavzu.id in student.mavzular %}
-                            <div>
-                              <span class="text-success fw-bold">{{ student.mavzular|get_item:mavzu.id|get_item:'togri' }}</span> / 
-                              <span class="text-danger fw-bold">{{ student.mavzular|get_item:mavzu.id|get_item:'notogri' }}</span>
-                            </div>
-                            <span class="badge 
-                              {% if student.mavzular|get_item:mavzu.id|get_item:'foiz' >= 70 %}bg-success
-                              {% elif student.mavzular|get_item:mavzu.id|get_item:'foiz' >= 50 %}bg-warning text-dark
-                              {% else %}bg-danger{% endif %}">
-                              {{ student.mavzular|get_item:mavzu.id|get_item:'foiz' }}%
-                            </span>
-                          {% else %}
-                            <span class="badge bg-secondary">N/A</span>
-                          {% endif %}
-                        </td>
-                      {% endfor %}
-                    </tr>
-                    {% empty %}
-                    <tr>
-                      <td colspan="{{ all_mavzular|length|add:3 }}" class="text-center py-5">
-                        <div class="text-muted">
-                          <i class="fa fa-info-circle me-2 fa-2x"></i>
-                          <h5 class="mt-3">Natijalar topilmadi</h5>
-                          <p>Hozirda tizimda natijalar mavjud emas</p>
-                        </div>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
           
-          <!-- Pagination -->
-          {% if natijalar.has_other_pages %}
-          <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-              {% if natijalar.has_previous %}
-              <li class="page-item">
-                <a class="page-link" href="?page=1{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="First">
-                  <span aria-hidden="true">&laquo;&laquo;</span>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="?page={{ natijalar.previous_page_number }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              {% endif %}
-              
-              {% for i in natijalar.paginator.page_range %}
-                {% if natijalar.number == i %}
-                <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
-                {% elif i > natijalar.number|add:'-3' and i < natijalar.number|add:'3' %}
-                <li class="page-item">
-                  <a class="page-link" href="?page={{ i }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}">{{ i }}</a>
-                </li>
-                {% endif %}
-              {% endfor %}
-              
-              {% if natijalar.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ natijalar.next_page_number }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-              <li class="page-item">
-                <a class="page-link" href="?page={{ natijalar.paginator.num_pages }}{% if request.GET.fakultet %}&fakultet={{ request.GET.fakultet }}{% endif %}{% if request.GET.yonalish %}&yonalish={{ request.GET.yonalish }}{% endif %}" aria-label="Last">
-                  <span aria-hidden="true">&raquo;&raquo;</span>
-                </a>
-              </li>
-              {% endif %}
-            </ul>
-          </nav>
-          {% endif %}
+          <!-- Results Table -->
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered table-striped">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="text-center" style="width: 40px;">#</th>
+                  <th scope="col" style="min-width: 140px;">Talaba</th>
+                  <th scope="col" style="min-width: 140px;">Fakultet</th>
+                  <th scope="col" style="min-width: 150px;">Yo'nalish</th>
+                  <th scope="col" style="min-width: 80px;">Kurs</th>
+                  <th scope="col" style="min-width: 80px;">Guruh</th>
+                  <th scope="col" style="min-width: 180px;">Mavzu</th>
+                  <th scope="col" class="text-success text-center" style="width: 70px;">To'g'ri</th>
+                  <th scope="col" class="text-danger text-center" style="width: 70px;">Noto'g'ri</th>
+                  <th scope="col" class="text-primary text-center" style="width: 60px;">Jami</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for natija in natijalar %}
+                <tr>
+                  <td class="text-center">{{ forloop.counter }}</td>
+                  <td class="fw-medium">{{ natija.talaba }}</td>
+                  <td>{{ natija.fakultet.name }}</td>
+                  <td>{{ natija.yonalish.name }}</td>
+                  <td>{{ natija.kurs.name }}</td>
+                  <td>{{ natija.guruh.name }}</td>
+                  <td>{{ natija.mavzu.mavzu }}</td>
+                  <td class="text-success text-center fw-bold">{{ natija.togri }}</td>
+                  <td class="text-danger text-center fw-bold">{{ natija.notogri }}</td>
+                  <td class="text-primary text-center fw-bold">{{ natija.jami }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="10" class="text-center py-5">
+                    <div class="text-muted">
+                      <i class="fa fa-info-circle me-2 fa-2x"></i>
+                      <h5 class="mt-3">Natijalar topilmadi</h5>
+                      <p>Hozirda tizimda natijalar mavjud emas</p>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
             </div>
           </div>
         </div>
-<script>
-  // Search functionality
-  document.getElementById('searchInput').addEventListener('keyup', function() {
-    const searchText = this.value.toLowerCase();
-    const activeTabId = document.querySelector('.tab-pane.active').id;
-    
-    if (activeTabId === 'standard-view') {
-      // Search in standard view
-      const standardTable = document.querySelector('#standard-view table');
-      const standardRows = standardTable.querySelectorAll('tbody tr');
-      
-      standardRows.forEach(row => {
-        const rowText = row.textContent.toLowerCase();
-        if (rowText.includes(searchText)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    } else {
-      // Search in student view
-      const studentTable = document.querySelector('#student-view table');
-      const studentRows = studentTable.querySelectorAll('tbody tr');
-      
-      studentRows.forEach(row => {
-        const rowText = row.textContent.toLowerCase();
-        if (rowText.includes(searchText)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    }
-  });
-  
-  // Update search when changing tabs
-  document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
-    tab.addEventListener('shown.bs.tab', function() {
-      // Trigger search on the newly active tab
-      const searchInput = document.getElementById('searchInput');
-      const event = new Event('keyup');
-      searchInput.dispatchEvent(event);
-    });
-  });
-</script>
 {% endblock %}

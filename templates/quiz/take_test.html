@@ -260,33 +260,31 @@
                     <input type="text" class="form-control" name="talaba_name" id="talaba_name" required>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                    {% bootstrap_form yonalishform %}
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="kurs_id" class="form-label">
-                        <i class="fa-solid fa-graduation-cap me-2"></i>Kurs
-                    </label>
-                    <select class="form-select" name="kurs_id" id="kurs_id" required>
-                        <option value="">Kursni tanlang</option>
-                        {% for kurs in kurslar %}
-                            <option value="{{ kurs.id }}">{{ kurs.name }}</option>
+                <div class="col-md-3 mb-3">
+                    <label for="id_fakultet" class="form-label"><i class="fa-solid fa-university me-2"></i>Fakultet</label>
+                    <select class="form-select" name="fakultet" id="id_fakultet" required>
+                        <option value="">Fakultetni tanlang</option>
+                        {% for fakultet in fakultetlar %}
+                            <option value="{{ fakultet.id }}">{{ fakultet.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="guruh_id" class="form-label">
-                        <i class="fa-solid fa-users me-2"></i>Guruh
-                    </label>
-                    <select class="form-select" name="guruh_id" id="guruh_id" required>
+                <div class="col-md-3 mb-3">
+                    <label for="id_yonalish" class="form-label"><i class="fa-solid fa-stream me-2"></i>Yo'nalish</label>
+                    <select class="form-select" name="yonalish" id="id_yonalish" required disabled>
+                        <option value="">Yo'nalishni tanlang</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="id_kurs" class="form-label"><i class="fa-solid fa-graduation-cap me-2"></i>Kurs</label>
+                    <select class="form-select" name="kurs_id" id="id_kurs" required disabled>
+                        <option value="">Kursni tanlang</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="id_guruh" class="form-label"><i class="fa-solid fa-users me-2"></i>Guruh</label>
+                    <select class="form-select" name="guruh_id" id="id_guruh" required disabled>
                         <option value="">Guruhni tanlang</option>
-                        {% for guruh in guruhlar %}
-                            <option value="{{ guruh.id }}">{{ guruh.name }}</option>
-                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -339,22 +337,61 @@
         document.getElementById('progressBar').style.width = progressPercentage + '%';
     }
 
-    // AJAX for yonalish
+
+    // Step-by-step AJAX select
     $(document).ready(function() {
+        // Fakultet -> Yonalish
         $('#id_fakultet').change(function() {
             var fakultetId = $(this).val();
-            $.ajax({
-                url: '/get-yonalishlar/',
-                data: {
-                    'fakultet_id': fakultetId
-                },
-                success: function(data) {
-                    $('#id_yonalish').html('<option value="">Yo\'nalishni tanlang</option>');
-                    $.each(data.yonalishlar, function(key, value) {
-                        $('#id_yonalish').append('<option value="' + value.id + '">' + value.name + '</option>');
+            $('#id_yonalish').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
+            $('#id_kurs').prop('disabled', true).html('<option value="">Kursni tanlang</option>');
+            $('#id_guruh').prop('disabled', true).html('<option value="">Guruhni tanlang</option>');
+            if (fakultetId) {
+                $.get('/get-yonalishlar/', { fakultet_id: fakultetId }, function(data) {
+                    var options = '<option value="">Yo\'nalishni tanlang</option>';
+                    $.each(data.yonalishlar, function(i, yon) {
+                        options += '<option value="' + yon.id + '">' + yon.name + '</option>';
                     });
-                }
-            });
+                    $('#id_yonalish').html(options).prop('disabled', false);
+                });
+            } else {
+                $('#id_yonalish').html('<option value="">Yo\'nalishni tanlang</option>').prop('disabled', true);
+            }
+        });
+
+        // Yonalish -> Kurs
+        $('#id_yonalish').change(function() {
+            var yonalishId = $(this).val();
+            $('#id_kurs').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
+            $('#id_guruh').prop('disabled', true).html('<option value="">Guruhni tanlang</option>');
+            if (yonalishId) {
+                $.get('/get-kurslar/', { yonalish_id: yonalishId }, function(data) {
+                    var options = '<option value="">Kursni tanlang</option>';
+                    $.each(data.kurslar, function(i, kurs) {
+                        options += '<option value="' + kurs.id + '">' + kurs.name + '</option>';
+                    });
+                    $('#id_kurs').html(options).prop('disabled', false);
+                });
+            } else {
+                $('#id_kurs').html('<option value="">Kursni tanlang</option>').prop('disabled', true);
+            }
+        });
+
+        // Kurs -> Guruh
+        $('#id_kurs').change(function() {
+            var kursId = $(this).val();
+            $('#id_guruh').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
+            if (kursId) {
+                $.get('/get-guruhlar/', { kurs_id: kursId }, function(data) {
+                    var options = '<option value="">Guruhni tanlang</option>';
+                    $.each(data.guruhlar, function(i, guruh) {
+                        options += '<option value="' + guruh.id + '">' + guruh.name + '</option>';
+                    });
+                    $('#id_guruh').html(options).prop('disabled', false);
+                });
+            } else {
+                $('#id_guruh').html('<option value="">Guruhni tanlang</option>').prop('disabled', true);
+            }
         });
     });
 

@@ -193,9 +193,12 @@
             <div class="percentage-text">{{ score|floatformat:0 }}%</div>
         </div>
         
+
         <div class="score-display">
-            <div class="score-numbers">{{ correct_answers }} / {{ total_questions }}</div>
+            <div class="score-numbers">{{ correct_answers }} / {{ total }}</div>
             <div class="score-label">To'g'ri javoblar</div>
+            <div class="score-numbers text-danger mt-2">{{ incorrect_answers }}</div>
+            <div class="score-label">Noto'g'ri javoblar</div>
         </div>
         
         <div class="action-buttons">

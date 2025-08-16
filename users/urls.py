@@ -28,6 +28,7 @@ urlpatterns = [
     path('guruhlar_delete/<str:pk>/', views.guruh_delete, name='guruh_delete'),
     
     path('natijalar/', views.admin_natijalar, name='admin_natijalar'),
+    path('natijalar/export/', views.export_natijalar_excel, name='export_natijalar_excel'),
     path('get-yonalishlar/', views.get_yonalishlar, name='get_yonalishlar'),
     path('chiqish/', views.chiqish_user, name='chiqish_user'),
 ]
