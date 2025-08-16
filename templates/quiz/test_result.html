@@ -1,2 +1,228 @@
-<h2>Sizning natijangiz</h2>
-<p>To'g'ri javoblar: {{ score }} / {{ total }}</p>
+{% extends 'asosiy/base.html' %}
+{% load static %}
+
+{% block title %}Test natijalari{% endblock %}
+
+{% block content %}
+<style>
+    .result-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        text-align: center;
+    }
+
+    .result-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        color: white;
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .result-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg); }
+    }
+
+    .result-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .result-icon i {
+        font-size: 3rem;
+    }
+
+    .result-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .result-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+
+    .score-display {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 2rem 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .score-numbers {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .score-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .percentage-circle {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .percentage-circle svg {
+        transform: rotate(-90deg);
+        width: 100%;
+        height: 100%;
+    }
+
+    .percentage-circle .circle-bg {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.2);
+        stroke-width: 8;
+    }
+
+    .percentage-circle .circle-progress {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.8);
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-dasharray: 440;
+        stroke-dashoffset: 440;
+        animation: progressAnimation 2s ease-in-out forwards;
+    }
+
+    @keyframes progressAnimation {
+        to {
+            stroke-dashoffset: calc(440 - (440 * var(--progress)) / 100);
+        }
+    }
+
+    .percentage-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        font-weight: 700;
+        z-index: 3;
+    }
+
+    .action-buttons {
+        margin-top: 2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .btn-action {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 16px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        margin: 0 0.5rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-action:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .success-animation {
+        animation: successPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes successPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+</style>
+
+<div class="result-container">
+    <div class="result-card">
+        <div class="result-icon success-animation">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        
+        <h1 class="result-title">Test yakunlandi!</h1>
+        <p class="result-subtitle">Sizning natijangiz tayyor</p>
+        
+        <div class="percentage-circle" style="--progress: {{ score|floatformat:0 }}">
+            <svg>
+                <circle class="circle-bg" cx="75" cy="75" r="70"></circle>
+                <circle class="circle-progress" cx="75" cy="75" r="70"></circle>
+            </svg>
+            <div class="percentage-text">{{ score|floatformat:0 }}%</div>
+        </div>
+        
+        <div class="score-display">
+            <div class="score-numbers">{{ correct_answers }} / {{ total_questions }}</div>
+            <div class="score-label">To'g'ri javoblar</div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url 'home' %}" class="btn btn-action">
+                <i class="fa-solid fa-home me-2"></i>Bosh sahifa
+            </a>
+            <a href="javascript:window.print()" class="btn btn-action">
+                <i class="fa-solid fa-print me-2"></i>Chop etish
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animate percentage circle
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressCircle = document.querySelector('.circle-progress');
+        const percentage = parseInt('{{ score|floatformat:0 }}');
+        
+        // Set the progress CSS variable
+        document.documentElement.style.setProperty('--progress', percentage);
+        
+        // Add success sound effect (optional)
+        if (percentage >= 70) {
+            console.log('Congratulations! Great score!');
+        }
+    });
+</script>
+
+{% endblock %}
