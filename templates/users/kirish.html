@@ -1,48 +1,42 @@
-{% extends "asosiy/base.html" %}
+{% extends "asosiy/login_base.html" %}
 {% load static %}
 
 
 {% block title %}Kirish{% endblock %}
 
 {% block content %}
-    <div class="row position-relative min-vh-100">
-        <div class="position-absolute top-50 start-50 translate-middle ">
-            <div class="position-relative">
-                <div class="position-absolute top-0 start-50 translate-middle">
-                    <div class="border p-5 h-100 w-100">
-                        <p class="text-center display-5">
-                            <strong>
-                                Kirish
-                            </strong>
-                        </p>
-
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="exampleInputUser" class="form-label">Username</label>
-                                <input type="text" name="username" class="form-control" id="exampleInputUser" aria-describedby="emailHelp">
-                            </div>
-                            <div class="mb-3">
-                                <label for="exampleInputPassword1" class="form-label">Password</label>
-                                <input type="password" name="password" class="form-control" id="exampleInputPassword1">
-                            </div>
-                            <div class="position-relative mt-5">
-                                <div class="position-absolute top-0 start-50 translate-middle">
-                                    <button type="submit" class="btn-sm btn btn-outline-primary px-3">Kirish</button>
-                                </div>
-                            </div>                           
-                            
-                        </form>
-                    </div>
-
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="login-card">
+                <div class="login-icon">
+                    <i class="fa-solid fa-user-lock"></i>
                 </div>
+                
+                <h1 class="login-title">Tizimga kirish</h1>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="username" class="form-label">
+                            <i class="fa-solid fa-user me-2"></i>Foydalanuvchi nomi
+                        </label>
+                        <input type="text" name="username" class="form-control" id="username" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="fa-solid fa-lock me-2"></i>Parol
+                        </label>
+                        <input type="password" name="password" class="form-control" id="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>
+                        Kirish
+                    </button>
+                </form>
             </div>
-
-
         </div>
-
-
     </div>
-
-
 {% endblock %}
