@@ -339,19 +339,27 @@ def test_bajarish(request, pk):
     guruhlar = Guruhs.objects.all().order_by('name')
     if request.method == 'POST':
         print("POST data:", request.POST)
-        # Foydalanuvchi javoblari dict ko‘rinishida keladi, masalan:
-        # {'test_<uuid>': ['B'], ...}
         yonalishform = YonalishForm(request.POST)
         form = TestAnswerForm(request.POST, tests=shuffled_tests)
         if form.is_valid():
             score = 0
             incorrect_answers = 0
             for test_obj, variants in shuffled_tests:
-                # request.POST.getlist() har doim ro'yxat qaytaradi, shuning uchun birinchi elementni olamiz
+                # Foydalanuvchi tanlagan qiymat (variant matni) ni olamiz
                 user_answers = request.POST.getlist(f'test_{test_obj.id}')
-                user_answer = user_answers[0] if user_answers else None
-                is_correct = user_answer == test_obj.togri_javob
-                print(f"Test ID: {test_obj.id}, User answer: {user_answer}, Correct: {test_obj.togri_javob}, Is correct: {is_correct}")
+                user_answer_value = user_answers[0] if user_answers else None
+
+                # To'g'ri javob harfini test_obj.togri_javob orqali olamiz
+                # Shu harfga mos variant matnini topamiz
+                correct_letter = test_obj.togri_javob
+                correct_value = None
+                for letter, value in variants:
+                    if letter == correct_letter:
+                        correct_value = value
+                        break
+
+                is_correct = user_answer_value == correct_value
+                print(f"Test ID: {test_obj.id}, User answer value: {user_answer_value}, Correct value: {correct_value}, Is correct: {is_correct}")
                 if is_correct:
                     score += 1
                 else:
