@@ -332,17 +332,27 @@ def test_bajarish(request, pk):
         ]
         random.shuffle(variants)
         shuffled_tests.append((test, variants))
-    from users.models import Fakultets
-    fakultetlar = Fakultets.objects.all()
+    # Tartiblangan querysetlar
+    fakultetlar = Fakultets.objects.all().order_by('name')
+    yonalishlar = Yonalishs.objects.all().order_by('name')
+    kurslar = Kurs.objects.all().order_by('name')
+    guruhlar = Guruhs.objects.all().order_by('name')
     if request.method == 'POST':
+        print("POST data:", request.POST)
+        # Foydalanuvchi javoblari dict ko‘rinishida keladi, masalan:
+        # {'test_<uuid>': ['B'], ...}
         yonalishform = YonalishForm(request.POST)
         form = TestAnswerForm(request.POST, tests=shuffled_tests)
         if form.is_valid():
             score = 0
             incorrect_answers = 0
-            for test, variants in shuffled_tests:
-                user_answer = form.cleaned_data.get(f'test_{test.id}')
-                if user_answer == test.togri_javob:
+            for test_obj, variants in shuffled_tests:
+                # request.POST.getlist() har doim ro'yxat qaytaradi, shuning uchun birinchi elementni olamiz
+                user_answers = request.POST.getlist(f'test_{test_obj.id}')
+                user_answer = user_answers[0] if user_answers else None
+                is_correct = user_answer == test_obj.togri_javob
+                print(f"Test ID: {test_obj.id}, User answer: {user_answer}, Correct: {test_obj.togri_javob}, Is correct: {is_correct}")
+                if is_correct:
                     score += 1
                 else:
                     incorrect_answers += 1
@@ -357,24 +367,45 @@ def test_bajarish(request, pk):
                     'yonalishform': yonalishform,
                     'tests': shuffled_tests,
                     'error': 'Iltimos, ismingizni kiriting!',
-                    'fakultetlar': fakultetlar
+                    'fakultetlar': fakultetlar,
+                    'yonalishlar': yonalishlar,
+                    'kurslar': kurslar,
+                    'guruhlar': guruhlar,
                 })
-            Natijas.objects.create(
-                mavzu_id=pk,
-                fakultet_id=fakultet_id,
-                yonalish_id=yonalish_id,
-                kurs_id=kurs_id,
-                guruh_id=guruh_id,
-                talaba=talaba_name,
-                togri=score,
-                notogri=incorrect_answers,
-                jami=len(tests)
-            )
+            # Natijas obyektini yaratishdan oldin barcha idlar to'g'ri va bo'sh emasligiga ishonch hosil qiling
+            if fakultet_id and yonalish_id and kurs_id and guruh_id:
+                Natijas.objects.create(
+                    mavzu_id=pk,
+                    fakultet_id=fakultet_id,
+                    yonalish_id=yonalish_id,
+                    kurs_id=kurs_id,
+                    guruh_id=guruh_id,
+                    talaba=talaba_name,
+                    togri=score,
+                    notogri=incorrect_answers,
+                    jami=len(tests)
+                )
+            else:
+                return render(request, 'quiz/take_test.html', {
+                    'form': form,
+                    'yonalishform': yonalishform,
+                    'tests': shuffled_tests,
+                    'error': 'Fakultet, yo‘nalish, kurs va guruh to‘liq tanlanishi shart!',
+                    'fakultetlar': fakultetlar,
+                    'yonalishlar': yonalishlar,
+                    'kurslar': kurslar,
+                    'guruhlar': guruhlar,
+                })
             return render(request, 'quiz/test_result.html', {
                 'score': round(score * 100 / len(tests)) if len(tests) > 0 else 0,
                 'total': len(tests),
                 'correct_answers': score,
-                'incorrect_answers': incorrect_answers
+                'incorrect_answers': incorrect_answers,
+                'fakultet': Fakultets.objects.filter(id=fakultet_id).first(),
+                'yonalish': Yonalishs.objects.filter(id=yonalish_id).first(),
+                'kurs': Kurs.objects.filter(id=kurs_id).first(),
+                'guruh': Guruhs.objects.filter(id=guruh_id).first(),
+                'talaba_name': talaba_name,
             })
     else:
         form = TestAnswerForm(tests=shuffled_tests)
@@ -383,6 +414,9 @@ def test_bajarish(request, pk):
         'form': form,
         'yonalishform': yonalishform,
         'tests': shuffled_tests,
-        'fakultetlar': fakultetlar
+        'fakultetlar': fakultetlar,
+        'yonalishlar': yonalishlar,
+        'kurslar': kurslar,
+        'guruhlar': guruhlar,
     }
     return render(request, 'quiz/take_test.html', context)
