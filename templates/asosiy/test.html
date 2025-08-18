@@ -1,0 +1,29 @@
+<!-- ...existing code... -->
+<select id="fakultet" name="fakultet_id">
+    <!-- fakultetlar options -->
+</select>
+
+<select id="yonalish" name="yonalish_id">
+    <option value="">Yonalish tanlang</option>
+</select>
+
+<script>
+document.getElementById('fakultet').addEventListener('change', function() {
+    var fakultetId = this.value;
+    var yonalishSelect = document.getElementById('yonalish');
+    yonalishSelect.innerHTML = '<option value="">Yonalish tanlang</option>';
+    if (fakultetId) {
+        fetch('/get-yonalishlar/?fakultet_id=' + fakultetId)
+            .then(response => response.json())
+            .then(data => {
+                data.yonalishlar.forEach(function(yonalish) {
+                    var opt = document.createElement('option');
+                    opt.value = yonalish.id;
+                    opt.textContent = yonalish.name;
+                    yonalishSelect.appendChild(opt);
+                });
+            });
+    }
+});
+</script>
+<!-- ...existing code... -->

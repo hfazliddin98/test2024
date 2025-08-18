@@ -1,4 +1,3 @@
-
 # ===== IMPORTS =====
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -434,8 +433,10 @@ def oqituvchi_delete(request, pk):
 def get_yonalishlar(request):
     fakultet_id = request.GET.get('fakultet_id')
     if not fakultet_id:
+        print("No fakultet_id provided in request")  # Debug log
         return JsonResponse({'yonalishlar': []})
     yonalishlar = list(Yonalishs.objects.filter(fakultet_id=fakultet_id).values('id', 'name'))
+    print(f"Fakultet ID: {fakultet_id}, Yonalishlar: {yonalishlar}")  # Debug log
     return JsonResponse({'yonalishlar': yonalishlar})
 
 

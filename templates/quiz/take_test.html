@@ -337,11 +337,9 @@
         document.getElementById('progressBar').style.width = progressPercentage + '%';
     }
 
-
-    // Step-by-step AJAX select
-    $(document).ready(function() {
+    $(function() {
         // Fakultet -> Yonalish
-        $('#id_fakultet').change(function() {
+        $('#id_fakultet').on('change', function() {
             var fakultetId = $(this).val();
             $('#id_yonalish').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
             $('#id_kurs').prop('disabled', true).html('<option value="">Kursni tanlang</option>');
@@ -349,7 +347,7 @@
             if (fakultetId) {
                 $.get('/get-yonalishlar/', { fakultet_id: fakultetId }, function(data) {
                     var options = '<option value="">Yo\'nalishni tanlang</option>';
-                    $.each(data.yonalishlar, function(i, yon) {
+                    $.each(data.yonalishlar, function(_, yon) {
                         options += '<option value="' + yon.id + '">' + yon.name + '</option>';
                     });
                     $('#id_yonalish').html(options).prop('disabled', false);
@@ -360,14 +358,14 @@
         });
 
         // Yonalish -> Kurs
-        $('#id_yonalish').change(function() {
+        $('#id_yonalish').on('change', function() {
             var yonalishId = $(this).val();
             $('#id_kurs').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
             $('#id_guruh').prop('disabled', true).html('<option value="">Guruhni tanlang</option>');
             if (yonalishId) {
                 $.get('/get-kurslar/', { yonalish_id: yonalishId }, function(data) {
                     var options = '<option value="">Kursni tanlang</option>';
-                    $.each(data.kurslar, function(i, kurs) {
+                    $.each(data.kurslar, function(_, kurs) {
                         options += '<option value="' + kurs.id + '">' + kurs.name + '</option>';
                     });
                     $('#id_kurs').html(options).prop('disabled', false);
@@ -378,13 +376,13 @@
         });
 
         // Kurs -> Guruh
-        $('#id_kurs').change(function() {
+        $('#id_kurs').on('change', function() {
             var kursId = $(this).val();
             $('#id_guruh').prop('disabled', true).html('<option value="">Yuklanmoqda...</option>');
             if (kursId) {
                 $.get('/get-guruhlar/', { kurs_id: kursId }, function(data) {
                     var options = '<option value="">Guruhni tanlang</option>';
-                    $.each(data.guruhlar, function(i, guruh) {
+                    $.each(data.guruhlar, function(_, guruh) {
                         options += '<option value="' + guruh.id + '">' + guruh.name + '</option>';
                     });
                     $('#id_guruh').html(options).prop('disabled', false);
@@ -393,28 +391,23 @@
                 $('#id_guruh').html('<option value="">Guruhni tanlang</option>').prop('disabled', true);
             }
         });
-    });
 
-    // Form validation
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('testForm').addEventListener('submit', function(e) {
+        // Form validation
+        $('#testForm').on('submit', function(e) {
             const totalQuestions = parseInt('{{ tests|length }}');
-            const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
-            
+            const answeredQuestions = $('input[type="radio"]:checked').length;
             if (answeredQuestions < totalQuestions) {
-                e.preventDefault();
                 alert('Iltimos, barcha savollarga javob bering!');
+                e.preventDefault();
                 return false;
             }
-            
-            if (confirm('Testni topshirishga ishonchingiz komilmi?')) {
-                return true;
-            } else {
+            if (!confirm('Testni topshirishga ishonchingiz komilmi?')) {
                 e.preventDefault();
                 return false;
             }
         });
     });
 </script>
+
 
 {% endblock %}
